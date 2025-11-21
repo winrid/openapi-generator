@@ -13,7 +13,7 @@ import marshal
 import options
 
 
-type UnfavoritePetRequest* = object
+type GetPetReviewsResponseWithPresence* = object
   ## 
-  reason*: Option[string] ## Reason for unfavoriting
+  review*: Option[string]
 

@@ -12,8 +12,11 @@ import tables
 import marshal
 import options
 
+import model_pet_alert_level
 
-type UnfavoritePetRequest* = object
+type PetAlert* = object
   ## 
-  reason*: Option[string] ## Reason for unfavoriting
+  id*: Option[string]
+  level*: Option[PetAlertLevel]
+  message*: Option[string]
 
