@@ -48,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.openapitools.codegen.CodegenConstants.X_ONE_OF_NAME;
 import static org.openapitools.codegen.utils.StringUtils.camelize;
 import static org.openapitools.codegen.utils.StringUtils.underscore;
 
@@ -1213,6 +1214,10 @@ public class RustServerCodegenDeprecated extends AbstractRustCodegen implements 
                 additionalProperties.put("apiUsesUuid", true);
             }
 
+            if (prop.isByteArray) {
+                additionalProperties.put("apiUsesByteArray", true);
+            }
+
             String xmlName = modelXmlNames.get(prop.dataType);
             if (xmlName != null) {
                 prop.vendorExtensions.put("x-item-xml-name", xmlName);
@@ -1382,8 +1387,8 @@ public class RustServerCodegenDeprecated extends AbstractRustCodegen implements 
         if (composedSchema != null) {
             exts = composedSchema.getExtensions();
         }
-        if (exts != null && exts.containsKey("x-one-of-name")) {
-            return (String) exts.get("x-one-of-name");
+        if (exts != null && exts.containsKey(X_ONE_OF_NAME)) {
+            return (String) exts.get(X_ONE_OF_NAME);
         }
 
         List<Schema> schemas = ModelUtils.getInterfaces(composedSchema);
@@ -1513,6 +1518,11 @@ public class RustServerCodegenDeprecated extends AbstractRustCodegen implements 
         // If a parameter uses UUIDs, we need to import the UUID package.
         if (uuidType.equals(param.dataType)) {
             additionalProperties.put("apiUsesUuid", true);
+        }
+
+        // If a parameter uses byte arrays, we need to set a flag.
+        if (param.isByteArray) {
+            additionalProperties.put("apiUsesByteArray", true);
         }
 
         if (Boolean.TRUE.equals(param.isFreeFormObject)) {

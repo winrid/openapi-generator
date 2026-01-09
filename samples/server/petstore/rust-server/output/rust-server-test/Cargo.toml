@@ -10,10 +10,11 @@ edition = "2018"
 [features]
 default = ["client", "server"]
 client = [
-    "hyper", "hyper-util/http1", "hyper-util/http2", "hyper-openssl", "hyper-tls", "native-tls", "openssl", "url"
+    "hyper", "percent-encoding", "hyper-util/http1", "hyper-util/http2", "hyper-openssl", "hyper-tls", "native-tls", "openssl", "url"
 ]
 server = [
-   "serde_ignored", "hyper", "regex", "percent-encoding", "url", "lazy_static"
+   "serde_ignored", "hyper", "percent-encoding", "url",
+   "lazy_static", "regex"
 ]
 cli = [
   "anyhow", "clap", "clap-verbosity-flag", "simple_logger", "tokio"
@@ -21,6 +22,7 @@ cli = [
 conversion = ["frunk", "frunk_derives", "frunk_core", "frunk-enum-core", "frunk-enum-derive"]
 
 mock = ["mockall"]
+validate = ["regex", "serde_valid", "swagger/serdevalid"]
 
 [target.'cfg(any(target_os = "macos", target_os = "windows", target_os = "ios"))'.dependencies]
 native-tls = { version = "0.2", optional = true }
@@ -38,11 +40,15 @@ futures = "0.3"
 swagger = { version = "7.0.0", features = ["serdejson", "server", "client", "tls"] }
 headers = "0.4.0"
 log = "0.4.27"
+
 mime = "0.3"
 mockall = { version = "0.13.1", optional = true }
 
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_valid = { version = "0.16", optional = true }
+
 validator = { version = "0.20", features = ["derive"] }
 
 # Crates included if required by the API definition
@@ -60,8 +66,8 @@ tower-service = "0.3.3"
 
 # Server, and client callback-specific
 lazy_static = { version = "1.5", optional = true }
-percent-encoding = { version = "2.3.1", optional = true }
 regex = { version = "1.12", optional = true }
+percent-encoding = { version = "2.3.1", optional = true }
 
 # CLI-specific
 anyhow = { version = "1", optional = true }
