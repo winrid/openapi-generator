@@ -44,6 +44,12 @@ import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETT
 import static org.openapitools.codegen.utils.StringUtils.camelize;
 import static org.openapitools.codegen.utils.StringUtils.underscore;
 
+/**
+ * <p>Mustache templates are located in
+ * {@code src/main/resources/csharp/} (root templates shared across all libraries) and
+ * {@code src/main/resources/csharp/libraries/} (library-specific overrides).
+ * A library-specific template shadows a root-level template of the same name.
+ */
 @SuppressWarnings("Duplicates")
 public class CSharpClientCodegen extends AbstractCSharpCodegen {
     protected String apiName = "Api";
@@ -1126,6 +1132,7 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
         supportingFiles.add(new SupportingFile("JsonSerializerOptionsProvider.mustache", clientPackageDir, "JsonSerializerOptionsProvider.cs"));
         supportingFiles.add(new SupportingFile("CookieContainer.mustache", clientPackageDir, "CookieContainer.cs"));
         supportingFiles.add(new SupportingFile("Option.mustache", clientPackageDir, "Option.cs"));
+        supportingFiles.add(new SupportingFile("FileParameter.mustache", clientPackageDir, "FileParameter.cs"));
 
         supportingFiles.add(new SupportingFile("IApi.mustache", sourceFolder + File.separator + packageName + File.separator + apiPackage(), getInterfacePrefix() + "Api.cs"));
 

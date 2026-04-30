@@ -512,7 +512,7 @@ public abstract class AbstractPythonCodegen extends DefaultCodegen implements Co
 
             // if required and optionals
             List<String> reqs = new ArrayList<>();
-            if (schema.getProperties() != null && !schema.getProperties().isEmpty()) {
+            if (ModelUtils.hasProperties(schema)) {
                 for (Object toAdd : schema.getProperties().keySet()) {
                     reqs.add((String) toAdd);
                 }
@@ -2061,6 +2061,10 @@ public abstract class AbstractPythonCodegen extends DefaultCodegen implements Co
             }
 
             if (cp.getIsEnum()) {
+                moduleImports.add("pydantic", "field_validator");
+            }
+
+            if (cp.getPattern() != null) {
                 moduleImports.add("pydantic", "field_validator");
             }
 

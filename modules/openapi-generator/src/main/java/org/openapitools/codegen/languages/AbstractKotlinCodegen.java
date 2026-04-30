@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.model.ModelMap;
 import org.openapitools.codegen.model.ModelsMap;
+import org.openapitools.codegen.model.OperationsMap;
 import org.openapitools.codegen.templating.mustache.EscapeChar;
 import org.openapitools.codegen.utils.ModelUtils;
 import org.slf4j.Logger;
@@ -56,6 +57,15 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
 
     public static final String JAVAX_PACKAGE = "javaxPackage";
     public static final String USE_JAKARTA_EE = "useJakartaEe";
+    public static final String USE_JACKSON_3 = "useJackson3";
+    public static final String JACKSON2_PACKAGE = "com.fasterxml.jackson";
+    public static final String JACKSON3_PACKAGE = "tools.jackson";
+    public static final String JACKSON_PACKAGE = "jacksonPackage";
+    public static final String SCHEMA_IMPLEMENTS = "schemaImplements";
+    public static final String SCHEMA_IMPLEMENTS_FIELDS = "schemaImplementsFields";
+    public static final String X_KOTLIN_IMPLEMENTS_SKIP = "xKotlinImplementsSkip";
+    public static final String X_KOTLIN_IMPLEMENTS_FIELDS_SKIP = "xKotlinImplementsFieldsSkip";
+    public static final String IMPLICIT_HEADERS = "implicitHeaders";
 
     private final Logger LOGGER = LoggerFactory.getLogger(AbstractKotlinCodegen.class);
 
@@ -71,15 +81,44 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
 
     protected String apiDocPath = "docs/";
     protected String modelDocPath = "docs/";
+    @Setter
     protected boolean parcelizeModels = false;
     @Getter @Setter
     protected boolean serializableModel = false;
 
     @Setter protected boolean useJakartaEe = false;
+    @Getter @Setter protected boolean useJackson3 = false;
 
     @Setter protected boolean nonPublicApi = false;
 
-    @Getter protected CodegenConstants.ENUM_PROPERTY_NAMING_TYPE enumPropertyNaming = CodegenConstants.ENUM_PROPERTY_NAMING_TYPE.original;
+    /**
+     * Naming convention options for Kotlin enum properties. Extends the shared
+     * {@link org.openapitools.codegen.CodegenConstants.ENUM_PROPERTY_NAMING_TYPE} with
+     * Kotlin-specific options so that Kotlin generators are not forced to add language-specific
+     * values to the shared enum (which cannot be extended in Java).
+     */
+    public enum KotlinEnumNamingType {
+        camelCase, PascalCase, snake_case, original, UPPERCASE,
+        /**
+         * Like {@code original}, but uses Kotlin's backtick-escaped identifier syntax to preserve
+         * more values without falling back to sanitization. Where {@code original} would silently
+         * replace characters (e.g. {@code in-progress} → {@code inMinusProgress}), this option
+         * wraps the value in backticks instead (e.g. {@code `in-progress`}).
+         * <p>
+         * Particularly useful for sort/order enums whose values contain commas or other punctuation,
+         * e.g. {@code name,asc}, {@code name,desc}, {@code id,asc}, {@code id,desc} — these are
+         * preserved as `name,asc` etc. rather than being mangled into {@code nameCommaAsc}.
+         * </p>
+         * <ul>
+         *   <li>Already a valid plain Kotlin identifier and not reserved → used as-is</li>
+         *   <li>Contains no backtick / newline / CR / NUL → wrapped in backticks</li>
+         *   <li>Otherwise → falls back to the standard sanitization (same as {@code original})</li>
+         * </ul>
+         */
+        bestEffortBacktick
+    }
+
+    @Getter protected KotlinEnumNamingType enumPropertyNaming = KotlinEnumNamingType.original;
 
     // model classes cannot use the same property names defined in HashMap
     // ref: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-hash-map/
@@ -88,6 +127,20 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
     private final Map<String, String> schemaKeyToModelNameCache = new HashMap<>();
     @Getter @Setter
     protected List<String> additionalModelTypeAnnotations = new LinkedList<>();
+    @Getter
+    @Setter
+    protected Map<String, List<String>> schemaImplements = new HashMap<>();
+    @Getter
+    @Setter
+    protected Map<String, List<String>> schemaImplementsFields = new HashMap<>();
+    @Getter
+    @Setter
+    protected List<String> xKotlinImplementsSkip = new ArrayList<>();
+    @Getter
+    @Setter
+    protected Map<String, List<String>> xKotlinImplementsFieldsSkip = new HashMap<>();
+    @Setter
+    protected boolean implicitHeaders = false;
 
     public AbstractKotlinCodegen() {
         super();
@@ -261,7 +314,11 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
         addOption(CodegenConstants.ARTIFACT_ID, "Generated artifact id (name of jar).", artifactId);
         addOption(CodegenConstants.ARTIFACT_VERSION, "Generated artifact's package version.", artifactVersion);
 
-        CliOption enumPropertyNamingOpt = new CliOption(CodegenConstants.ENUM_PROPERTY_NAMING, CodegenConstants.ENUM_PROPERTY_NAMING_DESC);
+        CliOption enumPropertyNamingOpt = new CliOption(CodegenConstants.ENUM_PROPERTY_NAMING,
+                "Naming convention for enum properties: 'camelCase', 'PascalCase', 'snake_case'," +
+                " 'UPPERCASE', 'original', and 'bestEffortBacktick' (like 'original'" +
+                " but tries to wrap values in backticks before falling back to sanitizing, e.g. `name,asc` stays" +
+                " `name,asc` rather than becoming nameCommaAsc; useful for sort/order enums)");
         cliOptions.add(enumPropertyNamingOpt.defaultValue(enumPropertyNaming.name()));
 
         cliOptions.add(new CliOption(CodegenConstants.PARCELIZE_MODELS, CodegenConstants.PARCELIZE_MODELS_DESC));
@@ -271,6 +328,7 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
 
         cliOptions.add(CliOption.newBoolean(MODEL_MUTABLE, MODEL_MUTABLE_DESC, false));
         cliOptions.add(CliOption.newString(ADDITIONAL_MODEL_TYPE_ANNOTATIONS, "Additional annotations for model type(class level annotations). List separated by semicolon(;) or new line (Linux or Windows)"));
+        cliOptions.add(CliOption.newBoolean(IMPLICIT_HEADERS, "Skip header parameters in the generated API methods.", implicitHeaders));
     }
 
     @Override
@@ -314,14 +372,14 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
     /**
      * Sets the naming convention for Kotlin enum properties
      *
-     * @param enumPropertyNamingType The string representation of the naming convention, as defined by {@link org.openapitools.codegen.CodegenConstants.ENUM_PROPERTY_NAMING_TYPE}
+     * @param enumPropertyNamingType The string representation of the naming convention, as defined by {@link KotlinEnumNamingType}
      */
     public void setEnumPropertyNaming(final String enumPropertyNamingType) {
         try {
-            this.enumPropertyNaming = CodegenConstants.ENUM_PROPERTY_NAMING_TYPE.valueOf(enumPropertyNamingType);
+            this.enumPropertyNaming = KotlinEnumNamingType.valueOf(enumPropertyNamingType);
         } catch (IllegalArgumentException ex) {
             StringBuilder sb = new StringBuilder(enumPropertyNamingType + " is an invalid enum property naming option. Please choose from:");
-            for (CodegenConstants.ENUM_PROPERTY_NAMING_TYPE t : CodegenConstants.ENUM_PROPERTY_NAMING_TYPE.values()) {
+            for (KotlinEnumNamingType t : KotlinEnumNamingType.values()) {
                 sb.append("\n  ").append(t.name());
             }
             throw new RuntimeException(sb.toString());
@@ -378,7 +436,7 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
                 inner = new StringSchema().description("TODO default missing map inner type to string");
                 p.setAdditionalProperties(inner);
             }
-            return getSchemaType(target) + "<kotlin.String, " + getTypeDeclaration(inner) + ">";
+            return getSchemaType(target) + "<kotlin.String, " + getItemsTypeDeclaration(inner) + ">";
         }
         return super.getTypeDeclaration(target);
     }
@@ -394,9 +452,27 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, ModelsMap> postProcessAllModels(Map<String, ModelsMap> objs) {
         objs = super.postProcessAllModels(objs);
         objs = super.updateAllModels(objs);
+
+        // Bridge x-implements (set by oneOf pipeline) into x-kotlin-implements (read by Kotlin templates)
+        for (ModelsMap modelsAttrs : objs.values()) {
+            for (ModelMap mo : modelsAttrs.getModels()) {
+                CodegenModel cm = mo.getModel();
+                List<String> xImplements = (List<String>) cm.getVendorExtensions().get(CodegenConstants.X_IMPLEMENTS);
+                if (xImplements != null && !xImplements.isEmpty()) {
+                    List<String> kotlinImplements = (List<String>) cm.getVendorExtensions()
+                            .computeIfAbsent(VendorExtension.X_KOTLIN_IMPLEMENTS.getName(), k -> new ArrayList<>());
+                    for (String iface : xImplements) {
+                        if (!kotlinImplements.contains(iface)) {
+                            kotlinImplements.add(iface);
+                        }
+                    }
+                }
+            }
+        }
 
         if (!additionalModelTypeAnnotations.isEmpty()) {
             for (String modelName : objs.keySet()) {
@@ -426,6 +502,43 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
             }
         }
         return postProcessModelsEnum(objs);
+    }
+
+    @Override
+    public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
+        handleImplicitHeaders(objs);
+        return objs;
+    }
+
+    protected void handleImplicitHeaders(OperationsMap objs) {
+        if (!implicitHeaders) {
+            return;
+        }
+
+        objs.getOperations().getOperation().forEach(this::handleImplicitHeaders);
+    }
+
+    /**
+     * This method removes all implicit header parameters from the list of parameters
+     *
+     * @param operation - operation to be processed
+     */
+    private void handleImplicitHeaders(CodegenOperation operation) {
+        if (operation.allParams.isEmpty()) {
+            return;
+        }
+        final ArrayList<CodegenParameter> copy = new ArrayList<>(operation.allParams);
+        operation.allParams.clear();
+
+        for (CodegenParameter p : copy) {
+            if (p.isHeaderParam) {
+                operation.implicitHeadersParams.add(p);
+                operation.headerParams.removeIf(header -> header.baseName.equals(p.baseName));
+                LOGGER.debug("Update operation [{}]. Remove header [{}] because it's marked to be implicit", operation.operationId, p.baseName);
+            } else {
+                operation.allParams.add(p);
+            }
+        }
     }
 
     @Override
@@ -513,7 +626,19 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
 
         if (additionalProperties.containsKey(ADDITIONAL_MODEL_TYPE_ANNOTATIONS)) {
             String additionalAnnotationsList = additionalProperties.get(ADDITIONAL_MODEL_TYPE_ANNOTATIONS).toString();
-            this.setAdditionalModelTypeAnnotations(Arrays.asList(additionalAnnotationsList.trim().split("\\s*(;|\\r?\\n)\\s*")));
+            this.setAdditionalModelTypeAnnotations(Arrays.asList(SPLIT_ON_SEMICOLON_OR_NEWLINE_REGEX.split(additionalAnnotationsList.trim())));
+        }
+        if (additionalProperties.containsKey(SCHEMA_IMPLEMENTS)) {
+            this.setSchemaImplements(getPropertyAsStringListMap(SCHEMA_IMPLEMENTS));
+        }
+        if (additionalProperties.containsKey(SCHEMA_IMPLEMENTS_FIELDS)) {
+            this.setSchemaImplementsFields(getPropertyAsStringListMap(SCHEMA_IMPLEMENTS_FIELDS));
+        }
+        if (additionalProperties.containsKey(X_KOTLIN_IMPLEMENTS_SKIP)) {
+            this.setXKotlinImplementsSkip(getPropertyAsStringList(X_KOTLIN_IMPLEMENTS_SKIP));
+        }
+        if (additionalProperties.containsKey(X_KOTLIN_IMPLEMENTS_FIELDS_SKIP)) {
+            this.setXKotlinImplementsFieldsSkip(getPropertyAsStringListMap(X_KOTLIN_IMPLEMENTS_FIELDS_SKIP));
         }
 
         additionalProperties.put(CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG, getSortParamsByRequiredFlag());
@@ -541,18 +666,23 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
         } else {
             applyJavaxPackage();
         }
+
+        if (additionalProperties.containsKey(USE_JACKSON_3)) {
+            setUseJackson3(Boolean.parseBoolean(additionalProperties.get(USE_JACKSON_3).toString()));
+        }
+        additionalProperties.put(USE_JACKSON_3, useJackson3);
+
+        if (useJackson3) {
+            applyJackson3Package();
+        } else {
+            applyJackson2Package();
+        }
+
+        convertPropertyToBooleanAndWriteBack(IMPLICIT_HEADERS, this::setImplicitHeaders);
     }
 
     protected boolean isModelMutable() {
         return Boolean.TRUE.equals(additionalProperties.get(MODEL_MUTABLE));
-    }
-
-    public Boolean getParcelizeModels() {
-        return parcelizeModels;
-    }
-
-    public void setParcelizeModels(Boolean parcelizeModels) {
-        this.parcelizeModels = parcelizeModels;
     }
 
     public boolean nonPublicApi() {
@@ -600,6 +730,17 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
                 break;
             case UPPERCASE:
                 modified = underscore(modified).toUpperCase(Locale.ROOT);
+                break;
+            case bestEffortBacktick:
+                // Use the original value as a plain identifier if already valid and not reserved.
+                if (!reservedWords.contains(value) && value.matches("[a-zA-Z_$][a-zA-Z0-9_$]*")) {
+                    return value;
+                }
+                // Wrap in backticks when the value contains no character that is illegal inside them.
+                if (!value.contains("`") && !value.contains("\n") && !value.contains("\r") && !value.contains("\0")) {
+                    return "`" + value + "`";
+                }
+                // Fall back: use the already-sanitized modified (pre-switch value).
                 break;
         }
 
@@ -816,6 +957,14 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
         writePropertyBack(JAVAX_PACKAGE, "jakarta");
     }
 
+    protected void applyJackson2Package() {
+        writePropertyBack(JACKSON_PACKAGE, JACKSON2_PACKAGE);
+    }
+
+    protected void applyJackson3Package() {
+        writePropertyBack(JACKSON_PACKAGE, JACKSON3_PACKAGE);
+    }
+
     @Override
     protected boolean isReservedWord(String word) {
         // We want case-sensitive escaping, to avoid unnecessary backtick-escaping.
@@ -839,16 +988,52 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
     @Override
     public CodegenModel fromModel(String name, Schema schema) {
         CodegenModel m = super.fromModel(name, schema);
-        List<String> implementedInterfacesClasses = (List<String>) m.getVendorExtensions().getOrDefault(VendorExtension.X_KOTLIN_IMPLEMENTS.getName(), List.of());
-        List<String> implementedInterfacesFields = Optional.ofNullable((List<String>) m.getVendorExtensions().get(VendorExtension.X_KOTLIN_IMPLEMENTS_FIELDS.getName()))
+        m.getVendorExtensions().putIfAbsent(VendorExtension.X_KOTLIN_IMPLEMENTS.getName(), List.of());
+        List<String> schemaImplementedInterfacesClasses = this.getSchemaImplements().getOrDefault(m.getSchemaName(), List.of());
+        List<String> schemaImplementedInterfacesFields = this.getSchemaImplementsFields().getOrDefault(m.getSchemaName(), List.of());
+        List<String> vendorExtensionImplementedInterfacesClasses = (List<String>) m.getVendorExtensions().get(VendorExtension.X_KOTLIN_IMPLEMENTS.getName());
+        List<String> interfacesToSkip = this.getXKotlinImplementsSkip().stream()
+                .filter(vendorExtensionImplementedInterfacesClasses::contains)
+                .collect(Collectors.toList());
+        if (!interfacesToSkip.isEmpty()) {
+            LOGGER.info("Interface(s) {} in model {} are skipped from being marked as implemented via config option '{}'.",
+                    interfacesToSkip, name, X_KOTLIN_IMPLEMENTS_SKIP);
+        }
+        List<String> vendorExtensionImplementedInterfacesClassesFiltered = vendorExtensionImplementedInterfacesClasses.stream()
+                .filter(interfaceName -> !interfacesToSkip.contains(interfaceName))
+                .collect(Collectors.toList());
+        List<String> vendorExtensionImplementedInterfacesFields = Optional.ofNullable((List<String>) m.getVendorExtensions().get(VendorExtension.X_KOTLIN_IMPLEMENTS_FIELDS.getName()))
                 .map(xKotlinImplementsFields -> {
-                    if (implementedInterfacesClasses.isEmpty() && !xKotlinImplementsFields.isEmpty()) {
+                    if (vendorExtensionImplementedInterfacesClassesFiltered.isEmpty() && !xKotlinImplementsFields.isEmpty()) {
                         LOGGER.warn("Annotating {} with {} without {} is not supported. {} will be ignored.",
                                 name, VendorExtension.X_KOTLIN_IMPLEMENTS_FIELDS.getName(), VendorExtension.X_KOTLIN_IMPLEMENTS.getName(),
                                 VendorExtension.X_KOTLIN_IMPLEMENTS_FIELDS.getName());
                     }
                     return xKotlinImplementsFields;
                 }).orElse(List.of());
+        List<String> fieldsToSkip = this.getXKotlinImplementsFieldsSkip().getOrDefault(m.getSchemaName(), List.of())
+                .stream()
+                .filter(vendorExtensionImplementedInterfacesFields::contains)
+                .collect(Collectors.toList());
+        if (!fieldsToSkip.isEmpty()) {
+            LOGGER.info("Field(s) {} in model {} are skipped from being marked as inherited via config option '{}'.",
+                    fieldsToSkip, name, X_KOTLIN_IMPLEMENTS_FIELDS_SKIP);
+        }
+        List<String> vendorExtensionImplementedInterfacesFieldsFiltered = vendorExtensionImplementedInterfacesFields.stream()
+                .filter(interfaceName -> !fieldsToSkip.contains(interfaceName))
+                .collect(Collectors.toList());
+        List<String> combinedImplementedInterfacesClasses = Stream.concat(vendorExtensionImplementedInterfacesClassesFiltered.stream(), schemaImplementedInterfacesClasses.stream())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        List<String> combinedImplementedInterfacesFields = Stream.concat(vendorExtensionImplementedInterfacesFieldsFiltered.stream(), schemaImplementedInterfacesFields.stream())
+                .distinct()
+                .collect(Collectors.toList());
+        if (serializableModel && !combinedImplementedInterfacesClasses.contains("java.io.Serializable")) {
+            combinedImplementedInterfacesClasses.add("java.io.Serializable");
+        }
+        m.getVendorExtensions().replace(VendorExtension.X_KOTLIN_IMPLEMENTS.getName(), combinedImplementedInterfacesClasses);
+        LOGGER.info("Model {} implements interface(s): {}", name, combinedImplementedInterfacesClasses);
         m.optionalVars = m.optionalVars.stream().distinct().collect(Collectors.toList());
         // Update allVars/requiredVars/optionalVars with isInherited
         // Each of these lists contains elements that are similar, but they are all cloned
@@ -865,7 +1050,7 @@ public abstract class AbstractKotlinCodegen extends DefaultCodegen implements Co
         Stream.of(m.requiredVars, m.optionalVars)
                 .flatMap(List::stream)
                 .filter(p -> allVarsMap.containsKey(p.baseName)
-                             || implementedInterfacesFields.contains(p.baseName)
+                             || combinedImplementedInterfacesFields.contains(p.baseName)
                 )
                 .forEach(p -> p.isInherited = true);
         return m;

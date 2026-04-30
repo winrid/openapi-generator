@@ -8,7 +8,6 @@ import org.openapitools.model.Category
 import org.openapitools.model.Color
 import org.openapitools.model.Pet
 import org.openapitools.model.Tag
-import java.io.Serializable
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Email
@@ -25,14 +24,21 @@ import io.swagger.annotations.ApiModelProperty
  * @param bark 
  * @param breed 
  * @param likesFetch Whether the dog enjoys fetching
+ * @param name 
+ * @param photoUrls 
+ * @param petType 
+ * @param id 
+ * @param category 
+ * @param tags 
+ * @param color 
  */
 data class Dog(
 
     @ApiModelProperty(example = "null", required = true, value = "")
-    @get:JsonProperty("bark", required = true) val bark: kotlin.Boolean,
+    @get:JsonProperty("bark", required = true) override val bark: kotlin.Boolean,
 
     @ApiModelProperty(example = "null", required = true, value = "")
-    @get:JsonProperty("breed", required = true) val breed: Dog.Breed,
+    @get:JsonProperty("breed", required = true) override val breed: Dog.Breed,
 
     @ApiModelProperty(example = "null", required = true, value = "Whether the dog enjoys fetching")
     @get:JsonProperty("likesFetch", required = true) override val likesFetch: kotlin.Boolean,
@@ -60,7 +66,7 @@ data class Dog(
     @field:Valid
     @ApiModelProperty(example = "null", value = "")
     @get:JsonProperty("color") override val color: Color? = null
-) : Pet, Serializable,  com.some.pack.Fetchable {
+) : Pet, com.some.pack.Canine, com.some.pack.Fetchable, java.io.Serializable {
 
     /**
     * 
@@ -78,7 +84,7 @@ data class Dog(
             @JsonCreator
             fun forValue(value: kotlin.String): Breed {
                 return values().firstOrNull{it -> it.value == value}
-                    ?: throw IllegalArgumentException("Unexpected value '$value' for enum 'Dog'")
+                    ?: throw IllegalArgumentException("Unexpected value '$value' for enum 'Breed'")
             }
         }
     }

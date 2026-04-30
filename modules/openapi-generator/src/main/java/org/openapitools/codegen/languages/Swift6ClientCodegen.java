@@ -46,6 +46,12 @@ import java.util.concurrent.TimeUnit;
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
 import static org.openapitools.codegen.utils.StringUtils.camelize;
 
+/**
+ * <p>Mustache templates are located in
+ * {@code src/main/resources/swift6/} (root templates shared across all libraries) and
+ * {@code src/main/resources/swift6/libraries/} (library-specific overrides).
+ * A library-specific template shadows a root-level template of the same name.
+ */
 public class Swift6ClientCodegen extends DefaultCodegen implements CodegenConfig {
     private final Logger LOGGER = LoggerFactory.getLogger(Swift6ClientCodegen.class);
 
@@ -491,6 +497,9 @@ public class Swift6ClientCodegen extends DefaultCodegen implements CodegenConfig
         additionalProperties.put(RESPONSE_AS, responseAs);
         if (ArrayUtils.contains(responseAs, RESPONSE_LIBRARY_PROMISE_KIT)) {
             additionalProperties.put("usePromiseKit", true);
+            LOGGER.warn("NOTICE: We are considering deprecating PromiseKit support in the Swift 6 generator. " +
+                        "If you are still using it, please share your use case here: " +
+                        "https://github.com/OpenAPITools/openapi-generator/issues/22791");
         }
         if (ArrayUtils.contains(responseAs, RESPONSE_LIBRARY_RX_SWIFT)) {
             additionalProperties.put("useRxSwift", true);
@@ -670,6 +679,9 @@ public class Swift6ClientCodegen extends DefaultCodegen implements CodegenConfig
                     infrastructureFolder,
                     "OpenAPIDateWithoutTime.swift"));
         }
+        supportingFiles.add(new SupportingFile("OpenAPIMutex.mustache",
+                infrastructureFolder,
+                "OpenAPIMutex.swift"));
         supportingFiles.add(new SupportingFile("APIs.mustache",
                 infrastructureFolder,
                 "APIs.swift"));
@@ -742,9 +754,15 @@ public class Swift6ClientCodegen extends DefaultCodegen implements CodegenConfig
             return ModelUtils.isSet(p) ? "Set<" + getTypeDeclaration(inner) + ">" : "[" + getTypeDeclaration(inner) + "]";
         } else if (ModelUtils.isMapSchema(p)) {
             Schema inner = ModelUtils.getAdditionalProperties(p);
-            return "[String: " + getTypeDeclaration(inner) + "]";
+            return "[String: " + getItemsTypeDeclaration(inner) + "]";
         }
         return super.getTypeDeclaration(p);
+    }
+
+    private String getItemsTypeDeclaration(Schema items) {
+        String itemsTypeDeclaration = getTypeDeclaration(items);
+        String nullable = items.getNullable() != null && items.getNullable() && !itemsTypeDeclaration.endsWith("?") ? "?" : "";
+        return itemsTypeDeclaration + nullable;
     }
 
     @Override

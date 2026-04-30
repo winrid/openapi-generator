@@ -45,6 +45,9 @@ import static java.util.Objects.nonNull;
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
 import static org.openapitools.codegen.utils.StringUtils.*;
 
+/**
+ * <p>Mustache templates are located in {@code src/main/resources/typescript-fetch/}.
+ */
 public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodegen {
     public static final String NPM_REPOSITORY = "npmRepository";
     public static final String WITH_INTERFACES = "withInterfaces";
@@ -61,6 +64,7 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
     public static final String PASCAL_CASE = "PascalCase";
     public static final String USE_SQUARE_BRACKETS_IN_ARRAY_NAMES = "useSquareBracketsInArrayNames";
     public static final String VALIDATION_ATTRIBUTES = "validationAttributes";
+    public static final String WITH_REQUEST_OPTS_IN_INTERFACE = "withRequestOptsInInterface";
 
     @Getter @Setter
     protected String npmRepository = null;
@@ -68,6 +72,7 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
     protected String importFileExtension = "";
     private boolean useSingleRequestParameter = true;
     private boolean prefixParameterInterfaces = false;
+    private boolean withRequestOptsInInterface = true;
     protected boolean addedApiIndex = false;
     protected boolean addedModelIndex = false;
     protected boolean withoutRuntimeChecks = false;
@@ -130,6 +135,7 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
         this.cliOptions.add(new CliOption(FILE_NAMING, "Naming convention for the output files: 'PascalCase', 'camelCase', 'kebab-case'.").defaultValue(this.fileNaming));
         this.cliOptions.add(new CliOption(USE_SQUARE_BRACKETS_IN_ARRAY_NAMES, "Setting this property to true will add brackets to array attribute names, e.g. my_values[].", SchemaTypeUtil.BOOLEAN_TYPE).defaultValue(Boolean.FALSE.toString()));
         this.cliOptions.add(new CliOption(VALIDATION_ATTRIBUTES, "Setting this property to true will generate the validation attributes of model properties.", SchemaTypeUtil.BOOLEAN_TYPE).defaultValue(Boolean.FALSE.toString()));
+        this.cliOptions.add(new CliOption(WITH_REQUEST_OPTS_IN_INTERFACE, "Setting this property to true will include *RequestOpts methods in the API interface declarations. Set to false to keep them only on the class.", SchemaTypeUtil.BOOLEAN_TYPE).defaultValue(Boolean.TRUE.toString()));
     }
 
     @Override
@@ -273,6 +279,11 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
         }
         writePropertyBack(PREFIX_PARAMETER_INTERFACES, getPrefixParameterInterfaces());
 
+        if (additionalProperties.containsKey(WITH_REQUEST_OPTS_IN_INTERFACE)) {
+            this.setWithRequestOptsInInterface(convertPropertyToBoolean(WITH_REQUEST_OPTS_IN_INTERFACE));
+        }
+        writePropertyBack(WITH_REQUEST_OPTS_IN_INTERFACE, getWithRequestOptsInInterface());
+
         if (additionalProperties.containsKey(NPM_NAME)) {
             addNpmPackageGeneration();
         }
@@ -383,6 +394,7 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
 
     @Override
     public ModelsMap postProcessModels(ModelsMap objs) {
+        // postProcessModelsEnum applies inner enum fixes via the parent class override
         List<ModelMap> models = postProcessModelsEnum(objs).getModels();
 
         // process enum and custom properties in models
@@ -800,7 +812,8 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
             for (CodegenProperty cpVar : cm.allVars) {
                 ExtendedCodegenProperty var = (ExtendedCodegenProperty) cpVar;
 
-                if (Boolean.TRUE.equals(var.isEnum)) {
+                // Handle both direct enum properties and inner enums (maps/arrays of enums)
+                if (Boolean.TRUE.equals(var.isEnum) || Boolean.TRUE.equals(var.isInnerEnum)) {
                     var.datatypeWithEnum = var.datatypeWithEnum
                             .replace(var.enumName, cm.classname + var.enumName);
                 }
@@ -845,7 +858,9 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
 
     private boolean processCodegenProperty(ExtendedCodegenProperty var, String parentClassName, Object xEntityId) {
         // name enum with model name, e.g. StatusEnum => PetStatusEnum
-        if (Boolean.TRUE.equals(var.isEnum)) {
+        // This applies to both direct enum properties (isEnum) and properties containing
+        // inner enums (isInnerEnum) like maps or arrays of enums.
+        if (Boolean.TRUE.equals(var.isEnum) || Boolean.TRUE.equals(var.isInnerEnum)) {
             // behaviour for enum names is specific for Typescript Fetch, not using namespaces
             var.datatypeWithEnum = var.datatypeWithEnum.replace(var.enumName, parentClassName + var.enumName);
 
@@ -1078,6 +1093,14 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
 
     private void setPrefixParameterInterfaces(boolean prefixParameterInterfaces) {
         this.prefixParameterInterfaces = prefixParameterInterfaces;
+    }
+
+    private boolean getWithRequestOptsInInterface() {
+        return withRequestOptsInInterface;
+    }
+
+    private void setWithRequestOptsInInterface(boolean withRequestOptsInInterface) {
+        this.withRequestOptsInInterface = withRequestOptsInInterface;
     }
 
     private static boolean itemsAreUniqueId(CodegenProperty items) {
@@ -1525,11 +1548,11 @@ public class TypeScriptFetchClientCodegen extends AbstractTypeScriptClientCodege
         public Set<CodegenProperty> oneOfPrimitives = new HashSet<>();
         @Getter @Setter
         public CodegenDiscriminator.MappedModel selfReferencingDiscriminatorMapping;
-      
+
         public boolean isEntity; // Is a model containing an "id" property marked as isUniqueId
         public String returnPassthrough;
         public boolean hasReturnPassthroughVoid;
-        
+
         public boolean hasSelfReferencingDiscriminatorMapping(){
             return selfReferencingDiscriminatorMapping != null;
         }

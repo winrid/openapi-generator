@@ -45,6 +45,12 @@ import java.util.concurrent.TimeUnit;
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
 import static org.openapitools.codegen.utils.StringUtils.camelize;
 
+/**
+ * <p>Mustache templates are located in
+ * {@code src/main/resources/swift5/} (root templates shared across all libraries) and
+ * {@code src/main/resources/swift5/libraries/} (library-specific overrides).
+ * A library-specific template shadows a root-level template of the same name.
+ */
 public class Swift5ClientCodegen extends DefaultCodegen implements CodegenConfig {
     private final Logger LOGGER = LoggerFactory.getLogger(Swift5ClientCodegen.class);
 
@@ -134,7 +140,7 @@ public class Swift5ClientCodegen extends DefaultCodegen implements CodegenConfig
         this.useOneOfInterfaces = true;
 
         generatorMetadata = GeneratorMetadata.newBuilder(generatorMetadata)
-                .stability(Stability.STABLE)
+                .stability(Stability.DEPRECATED)
                 .build();
 
         outputFolder = "generated-code" + File.separator + "swift";
@@ -429,6 +435,8 @@ public class Swift5ClientCodegen extends DefaultCodegen implements CodegenConfig
     @Override
     public void processOpts() {
         super.processOpts();
+
+        LOGGER.warn("IMPORTANT: This generator has been deprecated. Please use `swift6` instead");
 
         if (StringUtils.isEmpty(System.getenv("SWIFT_POST_PROCESS_FILE"))) {
             LOGGER.info("Environment variable SWIFT_POST_PROCESS_FILE not defined so the Swift code may not be properly formatted. To define it, try 'export SWIFT_POST_PROCESS_FILE=/usr/local/bin/swiftformat' (Linux/Mac)");
