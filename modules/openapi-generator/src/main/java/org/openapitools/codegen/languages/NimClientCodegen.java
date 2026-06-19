@@ -337,8 +337,14 @@ public class NimClientCodegen extends DefaultCodegen implements CodegenConfig {
                 }
             }
 
-            // Mark the model as needing custom JSON deserialization if any fields have custom names
-            if (hasCustomJsonNames) {
+            // Always emit the explicit to()/`%` procs for plain object models, even when no
+            // field is renamed. nim's generic json deserialization uses parseEnum on enum
+            // identifiers and cannot read string-valued enums; deserializing each field
+            // explicitly dispatches to that type's custom `to` (including enum modules), so
+            // every object model must have its own proc rather than falling back to generic.
+            boolean isComposed = (cm.oneOf != null && !cm.oneOf.isEmpty())
+                    || (cm.anyOf != null && !cm.anyOf.isEmpty());
+            if (hasCustomJsonNames || (!cm.isEnum && !isComposed)) {
                 cm.vendorExtensions.put("x-has-custom-json-names", true);
             }
         }
