@@ -651,8 +651,12 @@ public class NimClientCodegen extends DefaultCodegen implements CodegenConfig {
 
         if (schemaType.matches("\\d.*")) { // starts with number
             return "`" + schemaType + "`";
-        } else {
+        } else if (typeMapping.containsValue(schemaType) || languageSpecificPrimitives.contains(schemaType)) {
             return schemaType;
+        } else {
+            // Model/complex types: normalize to the declared model name (camelized) so API
+            // return types and model fields reference the type exactly as it is declared.
+            return toModelName(schemaType);
         }
     }
 
