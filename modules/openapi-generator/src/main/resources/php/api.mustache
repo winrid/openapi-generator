@@ -173,9 +173,9 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
+    public function {{operationId}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{^required}} = null{{/required}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}array $options = []{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}})
     {
-        {{#returnType}}list($response) = {{/returnType}}$this->{{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});{{#returnType}}
+        {{#returnType}}list($response) = {{/returnType}}$this->{{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}$options{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}});{{#returnType}}
         return $response;{{/returnType}}
     }
 
@@ -232,9 +232,9 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
+    public function {{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{^required}} = null{{/required}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}array $options = []{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}})
     {
-        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});
+        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}$options{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}});
 
         try {
             $options = $this->createHttpClientOption();
@@ -390,9 +390,9 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}Async({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
+    public function {{operationId}}Async({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{^required}} = null{{/required}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}array $options = []{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}})
     {
-        return $this->{{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}})
+        return $this->{{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}$options{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}})
             ->then(
                 function ($response) {
                     return $response[0];
@@ -452,10 +452,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
+    public function {{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{^required}} = null{{/required}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}array $options = []{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}})
     {
         $returnType = '{{{returnType}}}';
-        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});
+        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}$options{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}});
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -542,9 +542,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
+    public function {{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}{{^-last}}, {{/-last}}{{/exts.x-fc-positional-params}}{{#exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}, {{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}, {{/exts.x-fc-grouped-multi}}{{/exts.x-fc-has-positional}}{{#exts.x-fc-grouped-single}}${{paramName}}{{^required}} = null{{/required}}{{/exts.x-fc-grouped-single}}{{#exts.x-fc-grouped-multi}}array $options = []{{/exts.x-fc-grouped-multi}}{{/exts.x-group-parameters}})
     {
         {{#exts.x-group-parameters}}
+        {{#exts.x-fc-grouped-multi}}
         // unbox the optional parameters and request options from the $options array
 {{#exts.x-fc-grouped-params}}
         ${{paramName}} = array_key_exists('{{paramName}}', $options) ? $options['{{paramName}}'] : {{{defaultValue}}}{{^defaultValue}}null{{/defaultValue}};
@@ -554,6 +555,14 @@ use {{invokerPackage}}\ObjectSerializer;
         $variables = array_key_exists('variables', $options) ? $options['variables'] : [];
 {{/servers.0}}
         $contentType = $options['contentType'] ?? self::contentTypes['{{{operationId}}}'][0];
+        {{/exts.x-fc-grouped-multi}}
+        {{^exts.x-fc-grouped-multi}}
+{{#servers.0}}
+        $hostIndex = null;
+        $variables = [];
+{{/servers.0}}
+        $contentType = self::contentTypes['{{{operationId}}}'][0];
+        {{/exts.x-fc-grouped-multi}}
         {{/exts.x-group-parameters}}{{#allParams}}
         {{#required}}
         // verify the required parameter '{{paramName}}' is set

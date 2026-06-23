@@ -35,7 +35,12 @@ final class GroupedParams {
             }
         }
         operation.vendorExtensions.put("x-fc-positional-params", positional);
+        operation.vendorExtensions.put("x-fc-has-positional", !positional.isEmpty());
         operation.vendorExtensions.put("x-fc-grouped-params", grouped);
         operation.vendorExtensions.put("x-fc-has-grouped", !grouped.isEmpty());
+        // A single optional is exposed as a direct param (no point making callers build
+        // an options object for one value); the options object is only used for 2+.
+        operation.vendorExtensions.put("x-fc-grouped-single", grouped.size() == 1 ? grouped.get(0) : null);
+        operation.vendorExtensions.put("x-fc-grouped-multi", grouped.size() >= 2);
     }
 }
