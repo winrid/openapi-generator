@@ -394,6 +394,7 @@ public class PythonClientCodegen extends AbstractPythonCodegen implements Codege
                     if (!op.vendorExtensions.containsKey("x-group-parameters")) {
                         op.vendorExtensions.put("x-group-parameters", true);
                     }
+                    GroupedParams.split(op);
                 }
             }
         }

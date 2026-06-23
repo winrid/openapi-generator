@@ -1,0 +1,15 @@
+{{#vendorExtensions.x-fc-has-grouped}}
+
+    /** Optional parameters for {{operationId}}. */
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} struct Api{{operationIdCamelCase}}Options: Sendable {
+        {{#vendorExtensions.x-fc-grouped-params}}
+        {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} var {{paramName}}: {{> _fc_type}}?
+        {{/vendorExtensions.x-fc-grouped-params}}
+
+        {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init({{#vendorExtensions.x-fc-grouped-params}}{{paramName}}: {{> _fc_type}}? = nil{{^-last}}, {{/-last}}{{/vendorExtensions.x-fc-grouped-params}}) {
+            {{#vendorExtensions.x-fc-grouped-params}}
+            self.{{paramName}} = {{paramName}}
+            {{/vendorExtensions.x-fc-grouped-params}}
+        }
+    }
+{{/vendorExtensions.x-fc-has-grouped}}

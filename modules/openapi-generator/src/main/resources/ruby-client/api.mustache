@@ -21,12 +21,13 @@ module {{moduleName}}
     # {{{.}}}
     {{/notes}}
 {{#vendorExtensions.x-group-parameters}}
-    # @param [Hash] opts the parameters
-{{#allParams}}
-{{#required}}
-    # @option opts [{{{dataType}}}] :{{paramName}} {{description}} (required)
-{{/required}}
-{{/allParams}}
+{{#vendorExtensions.x-fc-positional-params}}
+    # @param {{paramName}} [{{{dataType}}}] {{description}}
+{{/vendorExtensions.x-fc-positional-params}}
+    # @param [Hash] opts the optional parameters
+{{#vendorExtensions.x-fc-grouped-params}}
+    # @option opts [{{{dataType}}}] :{{paramName}} {{description}}{{#defaultValue}} (default to {{{.}}}){{/defaultValue}}
+{{/vendorExtensions.x-fc-grouped-params}}
 {{/vendorExtensions.x-group-parameters}}
 {{^vendorExtensions.x-group-parameters}}
 {{#allParams}}
@@ -35,15 +36,15 @@ module {{moduleName}}
 {{/required}}
 {{/allParams}}
     # @param [Hash] opts the optional parameters
-{{/vendorExtensions.x-group-parameters}}
 {{#allParams}}
 {{^required}}
     # @option opts [{{{dataType}}}] :{{paramName}} {{description}}{{#defaultValue}} (default to {{{.}}}){{/defaultValue}}
 {{/required}}
 {{/allParams}}
+{{/vendorExtensions.x-group-parameters}}
     # @return [{{{returnType}}}{{^returnType}}nil{{/returnType}}]
-    def {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}opts = {})
-      {{#returnType}}data, _status_code, _headers = {{/returnType}}{{operationId}}_with_http_info({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}opts)
+    def {{operationId}}({{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{paramName}}, {{/vendorExtensions.x-fc-positional-params}}{{/vendorExtensions.x-group-parameters}}{{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}opts = {})
+      {{#returnType}}data, _status_code, _headers = {{/returnType}}{{operationId}}_with_http_info({{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{paramName}}, {{/vendorExtensions.x-fc-positional-params}}{{/vendorExtensions.x-group-parameters}}{{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}opts)
       {{#returnType}}data{{/returnType}}{{^returnType}}nil{{/returnType}}
     end
 
@@ -54,12 +55,13 @@ module {{moduleName}}
     # {{.}}
     {{/notes}}
 {{#vendorExtensions.x-group-parameters}}
-    # @param [Hash] opts the parameters
-{{#allParams}}
-{{#required}}
-    # @option opts [{{{dataType}}}] :{{paramName}} {{description}} (required)
-{{/required}}
-{{/allParams}}
+{{#vendorExtensions.x-fc-positional-params}}
+    # @param {{paramName}} [{{{dataType}}}] {{description}}
+{{/vendorExtensions.x-fc-positional-params}}
+    # @param [Hash] opts the optional parameters
+{{#vendorExtensions.x-fc-grouped-params}}
+    # @option opts [{{{dataType}}}] :{{paramName}} {{description}}{{#defaultValue}} (default to {{{.}}}){{/defaultValue}}
+{{/vendorExtensions.x-fc-grouped-params}}
 {{/vendorExtensions.x-group-parameters}}
 {{^vendorExtensions.x-group-parameters}}
 {{#allParams}}
@@ -68,27 +70,17 @@ module {{moduleName}}
 {{/required}}
 {{/allParams}}
     # @param [Hash] opts the optional parameters
-{{/vendorExtensions.x-group-parameters}}
 {{#allParams}}
 {{^required}}
     # @option opts [{{{dataType}}}] :{{paramName}} {{description}}{{#defaultValue}} (default to {{{.}}}){{/defaultValue}}
 {{/required}}
 {{/allParams}}
+{{/vendorExtensions.x-group-parameters}}
     # @return [Array<({{{returnType}}}{{^returnType}}nil{{/returnType}}, Integer, Hash)>] {{#returnType}}{{{.}}} data{{/returnType}}{{^returnType}}nil{{/returnType}}, response status code and response headers
-    def {{operationId}}_with_http_info({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}opts = {})
+    def {{operationId}}_with_http_info({{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{paramName}}, {{/vendorExtensions.x-fc-positional-params}}{{/vendorExtensions.x-group-parameters}}{{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}opts = {})
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: {{classname}}.{{operationId}} ...'
       end
-      {{#vendorExtensions.x-group-parameters}}
-      # unbox the parameters from the hash
-      {{#allParams}}
-      {{^isNullable}}
-      {{#required}}
-      {{{paramName}}} = opts[:'{{{paramName}}}']
-      {{/required}}
-      {{/isNullable}}
-      {{/allParams}}
-      {{/vendorExtensions.x-group-parameters}}
       {{#allParams}}
       {{^isNullable}}
       {{#required}}
@@ -223,7 +215,12 @@ module {{moduleName}}
       {{/formParams}}
 
       # http body (model)
+      {{#vendorExtensions.x-group-parameters}}
+      post_body = opts[:debug_body]{{#bodyParam}} || @api_client.object_to_http_body({{{paramName}}}){{/bodyParam}}
+      {{/vendorExtensions.x-group-parameters}}
+      {{^vendorExtensions.x-group-parameters}}
       post_body = opts[:debug_body]{{#bodyParam}} || @api_client.object_to_http_body({{#required}}{{{paramName}}}{{/required}}{{^required}}opts[:'{{{paramName}}}']{{/required}}){{/bodyParam}}
+      {{/vendorExtensions.x-group-parameters}}
 
       # return_type
       return_type = opts[:debug_return_type]{{#returnType}} || '{{{.}}}'{{/returnType}}

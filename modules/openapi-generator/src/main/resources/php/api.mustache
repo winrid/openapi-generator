@@ -131,10 +131,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * {{.}}
      *
 {{/description}}
-{{#exts.x-group-parameters}}
-     * Note: the input parameter is an associative array with the keys listed as the parameter name below
+{{#exts.x-fc-has-grouped}}
+     * Note: required parameters (and the request body) are positional; optional parameters are passed as keys of the $options array
      *
-{{/exts.x-group-parameters}}
+{{/exts.x-fc-has-grouped}}
 {{#servers}}
 {{#-first}}
      * This operation contains host(s) defined in the OpenAPI spec. Use 'hostIndex' to select the host.
@@ -173,9 +173,9 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}})
+    public function {{operationId}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
     {
-        {{#returnType}}list($response) = {{/returnType}}$this->{{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}});{{#returnType}}
+        {{#returnType}}list($response) = {{/returnType}}$this->{{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});{{#returnType}}
         return $response;{{/returnType}}
     }
 
@@ -190,10 +190,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * {{.}}
      *
 {{/description}}
-{{#exts.x-group-parameters}}
-     * Note: the input parameter is an associative array with the keys listed as the parameter name below
+{{#exts.x-fc-has-grouped}}
+     * Note: required parameters (and the request body) are positional; optional parameters are passed as keys of the $options array
      *
-{{/exts.x-group-parameters}}
+{{/exts.x-fc-has-grouped}}
 {{#servers}}
 {{#-first}}
      * This operation contains host(s) defined in the OpenAPI spec. Use 'hostIndex' to select the host.
@@ -232,9 +232,9 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}})
+    public function {{operationId}}WithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
     {
-        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}});
+        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});
 
         try {
             $options = $this->createHttpClientOption();
@@ -349,10 +349,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * {{.}}
      *
 {{/description}}
-{{#exts.x-group-parameters}}
-     * Note: the input parameter is an associative array with the keys listed as the parameter name below
+{{#exts.x-fc-has-grouped}}
+     * Note: required parameters (and the request body) are positional; optional parameters are passed as keys of the $options array
      *
-{{/exts.x-group-parameters}}
+{{/exts.x-fc-has-grouped}}
 {{#servers}}
 {{#-first}}
      * This operation contains host(s) defined in the OpenAPI spec. Use 'hostIndex' to select the host.
@@ -390,9 +390,9 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}Async({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}})
+    public function {{operationId}}Async({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
     {
-        return $this->{{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}})
+        return $this->{{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}})
             ->then(
                 function ($response) {
                     return $response[0];
@@ -411,10 +411,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * {{.}}
      *
 {{/description}}
-{{#exts.x-group-parameters}}
-     * Note: the input parameter is an associative array with the keys listed as the parameter name below
+{{#exts.x-fc-has-grouped}}
+     * Note: required parameters (and the request body) are positional; optional parameters are passed as keys of the $options array
      *
-{{/exts.x-group-parameters}}
+{{/exts.x-fc-has-grouped}}
 {{#servers}}
 {{#-first}}
      * This operation contains host(s) defined in the OpenAPI spec. Use 'hostIndex' to select the host.
@@ -452,10 +452,10 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}})
+    public function {{operationId}}AsyncWithHttpInfo({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
     {
         $returnType = '{{{returnType}}}';
-        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}});
+        $request = $this->{{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}, {{/allParams}}{{#servers}}{{#-first}}$hostIndex, $variables, {{/-first}}{{/servers}}$contentType{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -501,10 +501,10 @@ use {{invokerPackage}}\ObjectSerializer;
     /**
      * Create request for operation '{{{operationId}}}'
      *
-{{#exts.x-group-parameters}}
-     * Note: the input parameter is an associative array with the keys listed as the parameter name below
+{{#exts.x-fc-has-grouped}}
+     * Note: required parameters (and the request body) are positional; optional parameters are passed as keys of the $options array
      *
-{{/exts.x-group-parameters}}
+{{/exts.x-fc-has-grouped}}
 {{#servers}}
 {{#-first}}
     * This operation contains host(s) defined in the OpenAPI spec. Use 'hostIndex' to select the host.
@@ -542,17 +542,18 @@ use {{invokerPackage}}\ObjectSerializer;
      * @deprecated
     {{/isDeprecated}}
      */
-    public function {{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associative_array{{/exts.x-group-parameters}})
+    public function {{operationId}}Request({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^required}} = {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}}{{/required}}, {{/allParams}}{{#servers}}{{#-first}}?int $hostIndex = null, array $variables = [], {{/-first}}{{/servers}}string $contentType = self::contentTypes['{{{operationId}}}'][0]{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}{{^required}} = null{{/required}}, {{/exts.x-fc-positional-params}}array $options = []{{/exts.x-group-parameters}})
     {
         {{#exts.x-group-parameters}}
-        // unbox the parameters from the associative array
-{{#allParams}}
-        ${{paramName}} = array_key_exists('{{paramName}}', $associative_array) ? $associative_array['{{paramName}}'] : {{{defaultValue}}}{{^defaultValue}}null{{/defaultValue}};
-{{/allParams}}{{#servers.0}}
-        $hostIndex = $associative_array['hostIndex'];
-        $variables = array_key_exists('variables', $associative_array) ? $associative_array['variables'] : [];
+        // unbox the optional parameters and request options from the $options array
+{{#exts.x-fc-grouped-params}}
+        ${{paramName}} = array_key_exists('{{paramName}}', $options) ? $options['{{paramName}}'] : {{{defaultValue}}}{{^defaultValue}}null{{/defaultValue}};
+{{/exts.x-fc-grouped-params}}
+{{#servers.0}}
+        $hostIndex = array_key_exists('hostIndex', $options) ? $options['hostIndex'] : null;
+        $variables = array_key_exists('variables', $options) ? $options['variables'] : [];
 {{/servers.0}}
-        $contentType = $associative_array['contentType'] ?? self::contentTypes['{{{operationId}}}'][0];
+        $contentType = $options['contentType'] ?? self::contentTypes['{{{operationId}}}'][0];
         {{/exts.x-group-parameters}}{{#allParams}}
         {{#required}}
         // verify the required parameter '{{paramName}}' is set

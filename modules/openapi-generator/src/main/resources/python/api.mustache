@@ -17,19 +17,22 @@ from {{packageName}}.rest import RESTResponseType
 {{#operations}}
 {{#operation}}
 {{#vendorExtensions.x-group-parameters}}
+{{#vendorExtensions.x-fc-has-grouped}}
 from pydantic import BaseModel
 
 
-class Api{{operationIdCamelCase}}Request(BaseModel):
-    """Request object for {{operationId}}."""
+class Api{{operationIdCamelCase}}Options(BaseModel):
+    """Optional parameters for {{operationId}}."""
 {{#allParams}}
-    {{paramName}}: {{{vendorExtensions.x-py-typing}}}{{^required}} = None{{/required}}
-{{/allParams}}
-{{^allParams}}
-    pass
+{{^required}}
+{{^isBodyParam}}
+    {{paramName}}: {{{vendorExtensions.x-py-typing}}} = None
+{{/isBodyParam}}
+{{/required}}
 {{/allParams}}
 
 
+{{/vendorExtensions.x-fc-has-grouped}}
 {{/vendorExtensions.x-group-parameters}}
 {{/operation}}
 class {{classname}}:

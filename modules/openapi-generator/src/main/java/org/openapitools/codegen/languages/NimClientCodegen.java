@@ -613,6 +613,9 @@ public class NimClientCodegen extends DefaultCodegen implements CodegenConfig {
             if (groupParameters && !operation.vendorExtensions.containsKey("x-group-parameters")) {
                 operation.vendorExtensions.put("x-group-parameters", true);
             }
+            if (Boolean.TRUE.equals(operation.vendorExtensions.get("x-group-parameters"))) {
+                GroupedParams.split(operation);
+            }
 
             // Set custom flag for DELETE operations with body to use different template logic
             // Nim's httpClient.delete() doesn't support a body parameter

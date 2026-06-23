@@ -27,11 +27,18 @@ using namespace {{modelNamespace}};
 
 {{#operation}}
 {{#vendorExtensions.x-group-parameters}}
-pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{operationId}}(const {{classname}}::Api{{operationIdCamelCase}}Request& request) const
+pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{operationId}}(
+        {{#vendorExtensions.x-fc-positional-params}}
+        {{{dataType}}} {{paramName}}{{^-last}},{{/-last}}
+        {{/vendorExtensions.x-fc-positional-params}}
+        {{#vendorExtensions.x-fc-has-grouped}}
+        {{#vendorExtensions.x-fc-positional-params}}{{#-last}}, {{/-last}}{{/vendorExtensions.x-fc-positional-params}}const Api{{operationIdCamelCase}}Options& options
+        {{/vendorExtensions.x-fc-has-grouped}}
+) const
 {
-{{#allParams}}
-    auto {{paramName}} = request.{{paramName}};
-{{/allParams}}
+{{#vendorExtensions.x-fc-grouped-params}}
+    auto {{paramName}} = options.{{paramName}};
+{{/vendorExtensions.x-fc-grouped-params}}
 {{/vendorExtensions.x-group-parameters}}
 {{^vendorExtensions.x-group-parameters}}
 pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{operationId}}({{#allParams}}{{^required}}boost::optional<{{/required}}{{{dataType}}}{{^required}}>{{/required}} {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}) const
@@ -166,6 +173,37 @@ pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{
     if ( localVarConsumeHttpContentTypes.size() == 0 || localVarConsumeHttpContentTypes.find(utility::conversions::to_string_t("application/json")) != localVarConsumeHttpContentTypes.end() )
     {
         localVarRequestHttpContentType = utility::conversions::to_string_t("application/json");
+        {{! In the grouped form the body is always positional and unwrapped, so treat it as required regardless of the spec's optional flag. }}
+        {{#vendorExtensions.x-group-parameters}}
+        {{#bodyParam}}
+        web::json::value localVarJson;
+
+        {{#isPrimitiveType}}
+        localVarJson = ModelBase::toJson({{paramName}});
+        {{/isPrimitiveType}}
+        {{^isPrimitiveType}}
+        {{#isArray}}
+        {
+            std::vector<web::json::value> localVarJsonArray;
+            for( auto& localVarItem : {{paramName}} )
+            {
+                {{#items.isPrimitiveType}}localVarJsonArray.push_back(ModelBase::toJson(localVarItem));
+                {{/items.isPrimitiveType}}{{^items.isPrimitiveType}}{{#items.isString}}localVarJsonArray.push_back(ModelBase::toJson(localVarItem));
+                {{/items.isString}}{{^items.isString}}{{#items.isDateTime}}localVarJsonArray.push_back(ModelBase::toJson(localVarItem));
+                {{/items.isDateTime}}{{^items.isDateTime}}localVarJsonArray.push_back( localVarItem.get() ? localVarItem->toJson() : web::json::value::null() );
+                {{/items.isDateTime}}{{/items.isString}}{{/items.isPrimitiveType}}
+            }
+            localVarJson = web::json::value::array(localVarJsonArray);
+        }
+        {{/isArray}}
+        {{^isArray}}localVarJson = ModelBase::toJson({{paramName}});
+        {{/isArray}}
+        {{/isPrimitiveType}}
+
+        localVarHttpBody = std::shared_ptr<IHttpBody>( new JsonBody( localVarJson ) );
+        {{/bodyParam}}
+        {{/vendorExtensions.x-group-parameters}}
+        {{^vendorExtensions.x-group-parameters}}
         {{#bodyParam}}
         web::json::value localVarJson;
 
@@ -195,11 +233,49 @@ pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{
 
         localVarHttpBody = std::shared_ptr<IHttpBody>( new JsonBody( localVarJson ) );
         {{/bodyParam}}
+        {{/vendorExtensions.x-group-parameters}}
     }
     // multipart formdata
     else if( localVarConsumeHttpContentTypes.find(utility::conversions::to_string_t("multipart/form-data")) != localVarConsumeHttpContentTypes.end() )
     {
         localVarRequestHttpContentType = utility::conversions::to_string_t("multipart/form-data");
+        {{! In the grouped form the body is always positional and unwrapped, so treat it as required regardless of the spec's optional flag. }}
+        {{#vendorExtensions.x-group-parameters}}
+        {{#bodyParam}}
+        std::shared_ptr<MultipartFormData> localVarMultipart(new MultipartFormData);
+        {{#isPrimitiveType}}
+        localVarMultipart->add(ModelBase::toHttpContent(utility::conversions::to_string_t("{{paramName}}"), {{paramName}}));
+        {{/isPrimitiveType}}{{^isPrimitiveType}}{{#isArray}}
+        {
+            std::vector<web::json::value> localVarJsonArray;
+            for( auto& localVarItem : {{paramName}} )
+            {
+                localVarJsonArray.push_back(ModelBase::toJson(localVarItem));
+            }
+            localVarMultipart->add(ModelBase::toHttpContent(utility::conversions::to_string_t("{{paramName}}"), localVarJsonArray, utility::conversions::to_string_t("application/json")));
+        }{{/isArray}}{{#isMap}}
+        {
+            std::map<utility::string_t, web::json::value> localVarJsonMap;
+            for( auto& localVarItem : {{paramName}} )
+            {
+                web::json::value jval;
+                localVarJsonMap.insert( std::pair<utility::string_t, web::json::value>(localVarItem.first, ModelBase::toJson(localVarItem.second) ));
+            }
+            localVarMultipart->add(ModelBase::toHttpContent(utility::conversions::to_string_t("{{paramName}}"), localVarJsonMap, utility::conversions::to_string_t("application/json")));
+        }{{/isMap}}
+        {{^isArray}}{{^isMap}}{{#isString}}localVarMultipart->add(ModelBase::toHttpContent(utility::conversions::to_string_t("{{paramName}}"), {{paramName}}));
+        {{/isString}}{{^isString}}if({{paramName}}.get())
+        {
+            {{paramName}}->toMultipart(localVarMultipart, utility::conversions::to_string_t("{{paramName}}"));
+        }
+        {{/isString}}
+        {{/isMap}}{{/isArray}}{{/isPrimitiveType}}
+
+        localVarHttpBody = localVarMultipart;
+        localVarRequestHttpContentType += utility::conversions::to_string_t("; boundary=") + localVarMultipart->getBoundary();
+        {{/bodyParam}}
+        {{/vendorExtensions.x-group-parameters}}
+        {{^vendorExtensions.x-group-parameters}}
         {{#bodyParam}}
         std::shared_ptr<MultipartFormData> localVarMultipart(new MultipartFormData);
         {{#isPrimitiveType}}
@@ -233,6 +309,7 @@ pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{
         localVarHttpBody = localVarMultipart;
         localVarRequestHttpContentType += utility::conversions::to_string_t("; boundary=") + localVarMultipart->getBoundary();
         {{/bodyParam}}
+        {{/vendorExtensions.x-group-parameters}}
     }
     else if (localVarConsumeHttpContentTypes.find(utility::conversions::to_string_t("application/x-www-form-urlencoded")) != localVarConsumeHttpContentTypes.end())
     {

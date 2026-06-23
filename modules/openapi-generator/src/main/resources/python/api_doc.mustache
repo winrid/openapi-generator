@@ -11,7 +11,7 @@ Method | HTTP request | Description
 {{#operations}}
 {{#operation}}
 # **{{{operationId}}}**
-> {{#returnType}}{{{.}}} {{/returnType}}{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{paramName}}}{{/required}}{{^required}}{{{paramName}}}={{{paramName}}}{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}Api{{operationIdCamelCase}}Request{{/vendorExtensions.x-group-parameters}})
+> {{#returnType}}{{{.}}} {{/returnType}}{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{paramName}}}{{/required}}{{^required}}{{{paramName}}}={{{paramName}}}{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{{paramName}}}{{^-last}}, {{/-last}}{{/vendorExtensions.x-fc-positional-params}}{{#vendorExtensions.x-fc-has-grouped}}{{#vendorExtensions.x-fc-positional-params.0}}, {{/vendorExtensions.x-fc-positional-params.0}}options={{/vendorExtensions.x-fc-has-grouped}}{{/vendorExtensions.x-group-parameters}})
 
 {{#summary}}
 {{{summary}}}

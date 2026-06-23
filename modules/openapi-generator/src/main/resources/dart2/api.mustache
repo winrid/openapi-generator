@@ -50,11 +50,11 @@ class {{{classname}}} {
   ///
     {{/-last}}
   {{/allParams}}
-  Future<Response> {{{nickname}}}WithHttpInfo({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}Api{{operationIdCamelCase}}Request request,{{/vendorExtensions.x-group-parameters}}) async {
+  Future<Response> {{{nickname}}}WithHttpInfo({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{{dataType}}} {{{paramName}}}, {{/vendorExtensions.x-fc-positional-params}}{{#vendorExtensions.x-fc-has-grouped}}[ Api{{operationIdCamelCase}}Options? options, ]{{/vendorExtensions.x-fc-has-grouped}}{{/vendorExtensions.x-group-parameters}}) async {
     {{#vendorExtensions.x-group-parameters}}
-    {{#allParams}}
-    final {{{paramName}}} = request.{{{paramName}}};
-    {{/allParams}}
+    {{#vendorExtensions.x-fc-grouped-params}}
+    final {{{paramName}}} = options?.{{{paramName}}};
+    {{/vendorExtensions.x-fc-grouped-params}}
     {{/vendorExtensions.x-group-parameters}}
     // ignore: prefer_const_declarations
     final path = r'{{{path}}}'{{#pathParams}}
@@ -167,8 +167,8 @@ class {{{classname}}} {
   ///
     {{/-last}}
   {{/allParams}}
-  Future<{{#returnType}}{{{.}}}?{{/returnType}}{{^returnType}}void{{/returnType}}> {{{nickname}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}Api{{operationIdCamelCase}}Request request,{{/vendorExtensions.x-group-parameters}}) async {
-    final response = await {{{nickname}}}WithHttpInfo({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}} {{#allParams}}{{^required}}{{{paramName}}}: {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} {{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}request,{{/vendorExtensions.x-group-parameters}});
+  Future<{{#returnType}}{{{.}}}?{{/returnType}}{{^returnType}}void{{/returnType}}> {{{nickname}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{{dataType}}} {{{paramName}}}, {{/vendorExtensions.x-fc-positional-params}}{{#vendorExtensions.x-fc-has-grouped}}[ Api{{operationIdCamelCase}}Options? options, ]{{/vendorExtensions.x-fc-has-grouped}}{{/vendorExtensions.x-group-parameters}}) async {
+    final response = await {{{nickname}}}WithHttpInfo({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}} {{#allParams}}{{^required}}{{{paramName}}}: {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} {{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-fc-positional-params}}{{{paramName}}}, {{/vendorExtensions.x-fc-positional-params}}{{#vendorExtensions.x-fc-has-grouped}}options,{{/vendorExtensions.x-fc-has-grouped}}{{/vendorExtensions.x-group-parameters}});
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -199,18 +199,20 @@ class {{{classname}}} {
 }
 {{#operation}}
 {{#vendorExtensions.x-group-parameters}}
+{{#vendorExtensions.x-fc-has-grouped}}
 
-/// Request parameters for [{{{classname}}}.{{{nickname}}}].
-class Api{{operationIdCamelCase}}Request {
-  const Api{{operationIdCamelCase}}Request({{#hasParams}}{
-{{#allParams}}
-    {{#required}}required {{/required}}this.{{{paramName}}},
-{{/allParams}}
-  }{{/hasParams}});
-{{#allParams}}
-  final {{{dataType}}}{{^required}}?{{/required}} {{{paramName}}};
-{{/allParams}}
+/// Optional parameters for [{{{classname}}}.{{{nickname}}}].
+class Api{{operationIdCamelCase}}Options {
+  const Api{{operationIdCamelCase}}Options({
+{{#vendorExtensions.x-fc-grouped-params}}
+    this.{{{paramName}}},
+{{/vendorExtensions.x-fc-grouped-params}}
+  });
+{{#vendorExtensions.x-fc-grouped-params}}
+  final {{{dataType}}}? {{{paramName}}};
+{{/vendorExtensions.x-fc-grouped-params}}
 }
+{{/vendorExtensions.x-fc-has-grouped}}
 {{/vendorExtensions.x-group-parameters}}
 {{/operation}}
 {{/operations}}

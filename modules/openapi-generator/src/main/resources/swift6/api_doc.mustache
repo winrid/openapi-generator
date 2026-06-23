@@ -15,18 +15,18 @@ Method | HTTP request | Description
 {{^usePromiseKit}}
 {{^useRxSwift}}
 {{^useVapor}}
-    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: Api{{operationIdCamelCase}}Request{{/hasParams}}{{/vendorExtensions.x-group-parameters}}{{#hasParams}}, {{/hasParams}}completion: @escaping (_ data: {{{returnType}}}{{^returnType}}Void{{/returnType}}?, _ error: Error?) -> Void)
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_method_params}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}{{#hasParams}}, {{/hasParams}}completion: @escaping (_ data: {{{returnType}}}{{^returnType}}Void{{/returnType}}?, _ error: Error?) -> Void)
 {{/useVapor}}
 {{/useRxSwift}}
 {{/usePromiseKit}}
 {{#usePromiseKit}}
-    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}} {{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: Api{{operationIdCamelCase}}Request{{/hasParams}}{{/vendorExtensions.x-group-parameters}}) -> Promise<{{{returnType}}}{{^returnType}}Void{{/returnType}}>
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}} {{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_method_params}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}) -> Promise<{{{returnType}}}{{^returnType}}Void{{/returnType}}>
 {{/usePromiseKit}}
 {{#useRxSwift}}
-    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: Api{{operationIdCamelCase}}Request{{/hasParams}}{{/vendorExtensions.x-group-parameters}}) -> Observable<{{{returnType}}}{{^returnType}}Void{{/returnType}}>
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_method_params}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}) -> Observable<{{{returnType}}}{{^returnType}}Void{{/returnType}}>
 {{/useRxSwift}}
 {{#useVapor}}
-    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: Api{{operationIdCamelCase}}Request{{/hasParams}}{{/vendorExtensions.x-group-parameters}}{{#hasParams}}, {{/hasParams}}headers: HTTPHeaders = {{projectName}}APIConfiguration.shared.customHeaders, beforeSend: (inout ClientRequest) throws -> () = { _ in }) -> EventLoopFuture<{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}>
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}open{{/nonPublicApi}} class func {{operationId}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}[{{enumName}}_{{operationId}}]{{/isContainer}}{{^isContainer}}{{enumName}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_method_params}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}{{#hasParams}}, {{/hasParams}}headers: HTTPHeaders = {{projectName}}APIConfiguration.shared.customHeaders, beforeSend: (inout ClientRequest) throws -> () = { _ in }) -> EventLoopFuture<{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}>
 {{/useVapor}}
 ```
 
@@ -48,7 +48,7 @@ import {{{projectName}}}
 {{#summary}}
 // {{{.}}}
 {{/summary}}
-{{classname}}.{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: {{classname}}.Api{{operationIdCamelCase}}Request({{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}){{/hasParams}}{{/vendorExtensions.x-group-parameters}}) { (response, error) in
+{{classname}}.{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_doc_example_args}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}) { (response, error) in
     guard error == nil else {
         print(error)
         return
@@ -65,7 +65,7 @@ import {{{projectName}}}
 {{#summary}}
 // {{{.}}}
 {{/summary}}
-{{classname}}.{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: {{classname}}.Api{{operationIdCamelCase}}Request({{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}){{/hasParams}}{{/vendorExtensions.x-group-parameters}}).then {
+{{classname}}.{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_doc_example_args}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}).then {
          // when the promise is fulfilled
      }.always {
          // regardless of whether the promise is fulfilled, or rejected
@@ -80,7 +80,7 @@ import {{{projectName}}}
 {{#summary}}
 // {{{.}}}
 {{/summary}}
-{{classname}}.{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}request: {{classname}}.Api{{operationIdCamelCase}}Request({{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}){{/hasParams}}{{/vendorExtensions.x-group-parameters}}).whenComplete { result in
+{{classname}}.{{{operationId}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{paramName}}: {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}{{#hasParams}}{{> _fc_doc_example_args}}{{/hasParams}}{{/vendorExtensions.x-group-parameters}}).whenComplete { result in
     switch result {
     case .failure(let error):
     // process error

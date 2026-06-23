@@ -118,6 +118,7 @@ public class DartClientCodegen extends AbstractDartCodegen {
                     if (!op.vendorExtensions.containsKey("x-group-parameters")) {
                         op.vendorExtensions.put("x-group-parameters", true);
                     }
+                    GroupedParams.split(op);
                 }
             }
         }

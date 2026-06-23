@@ -5,8 +5,24 @@
         {{/notes}}
 
         {{#vendorExtensions.x-group-parameters}}
-        :param {{operationIdCamelCase}}_request: The request object containing all parameters for this operation. (required)
-        :type {{operationIdCamelCase}}_request: Api{{operationIdCamelCase}}Request
+        {{#allParams}}
+        {{#required}}
+        :param {{paramName}}:{{#description}} {{{.}}}{{/description}} (required)
+        :type {{paramName}}: {{dataType}}
+        {{/required}}
+        {{/allParams}}
+        {{#allParams}}
+        {{^required}}
+        {{#isBodyParam}}
+        :param {{paramName}}:{{#description}} {{{.}}}{{/description}} (optional)
+        :type {{paramName}}: {{dataType}}, optional
+        {{/isBodyParam}}
+        {{/required}}
+        {{/allParams}}
+        {{#vendorExtensions.x-fc-has-grouped}}
+        :param options: Optional parameters for this operation.
+        :type options: Api{{operationIdCamelCase}}Options, optional
+        {{/vendorExtensions.x-fc-has-grouped}}
         {{/vendorExtensions.x-group-parameters}}
         {{^vendorExtensions.x-group-parameters}}
         {{#allParams}}
@@ -47,7 +63,17 @@
             {{/vendorExtensions.x-group-parameters}}
             {{#vendorExtensions.x-group-parameters}}
             {{#allParams}}
-            {{paramName}}={{operationIdCamelCase}}_request.{{paramName}},
+            {{#required}}
+            {{paramName}}={{paramName}},
+            {{/required}}
+            {{^required}}
+            {{#isBodyParam}}
+            {{paramName}}={{paramName}},
+            {{/isBodyParam}}
+            {{^isBodyParam}}
+            {{paramName}}=options.{{paramName}} if options is not None else None,
+            {{/isBodyParam}}
+            {{/required}}
             {{/allParams}}
             {{/vendorExtensions.x-group-parameters}}
             _request_auth=_request_auth,

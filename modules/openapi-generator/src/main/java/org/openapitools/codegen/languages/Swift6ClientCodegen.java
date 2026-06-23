@@ -1295,6 +1295,9 @@ public class Swift6ClientCodegen extends DefaultCodegen implements CodegenConfig
             if (groupParameters && !operation.vendorExtensions.containsKey("x-group-parameters")) {
                 operation.vendorExtensions.put("x-group-parameters", true);
             }
+            if (Boolean.TRUE.equals(operation.vendorExtensions.get("x-group-parameters"))) {
+                GroupedParams.split(operation);
+            }
             for (CodegenParameter cp : operation.allParams) {
                 cp.vendorExtensions.put("x-swift-example", constructExampleCode(cp, modelMaps, new HashSet<>()));
             }

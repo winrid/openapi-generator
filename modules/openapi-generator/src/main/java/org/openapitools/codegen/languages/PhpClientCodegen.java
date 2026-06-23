@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.CliOption;
 import org.openapitools.codegen.CodegenConstants;
 import org.openapitools.codegen.CodegenOperation;
+import org.openapitools.codegen.CodegenParameter;
 import org.openapitools.codegen.CodegenType;
 import org.openapitools.codegen.SupportingFile;
 import org.openapitools.codegen.model.ModelMap;
@@ -152,8 +153,9 @@ public class PhpClientCodegen extends AbstractPhpCodegen {
     public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
         objs = super.postProcessOperationsWithModels(objs, allModels);
 
-        // when useSingleRequestParameter is enabled, set x-group-parameters so the
-        // template emits one $associative_array argument instead of one per parameter
+        // when useSingleRequestParameter is enabled, keep required params (and the
+        // request body) positional and collect the remaining optional params into a
+        // single $options array (x-fc-positional-params vs x-fc-grouped-params)
         if (Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")))) {
             OperationMap operations = objs.getOperations();
             if (operations != null) {
@@ -161,6 +163,7 @@ public class PhpClientCodegen extends AbstractPhpCodegen {
                     if (!operation.vendorExtensions.containsKey("x-group-parameters")) {
                         operation.vendorExtensions.put("x-group-parameters", true);
                     }
+                    GroupedParams.split(operation);
                 }
             }
         }

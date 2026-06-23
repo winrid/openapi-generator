@@ -613,6 +613,9 @@ public class RubyClientCodegen extends AbstractRubyCodegen {
             if (Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false"))) && !op.vendorExtensions.containsKey("x-group-parameters")) {
                 op.vendorExtensions.put("x-group-parameters", true);
             }
+            if (Boolean.TRUE.equals(op.vendorExtensions.get("x-group-parameters"))) {
+                GroupedParams.split(op);
+            }
             for (CodegenParameter p : op.allParams) {
                 p.vendorExtensions.put("x-ruby-example", constructExampleCode(p, modelMaps, processedModelMaps));
             }

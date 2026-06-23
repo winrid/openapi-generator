@@ -354,6 +354,9 @@ public class CppRestSdkClientCodegen extends AbstractCppCodegen {
             if (groupParameters && !op.vendorExtensions.containsKey("x-group-parameters")) {
                 op.vendorExtensions.put("x-group-parameters", true);
             }
+            if (Boolean.TRUE.equals(op.vendorExtensions.get("x-group-parameters"))) {
+                GroupedParams.split(op);
+            }
             for (String hdr : op.imports) {
                 if (importMapping.containsKey(hdr)) {
                     continue;

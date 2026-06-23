@@ -12,7 +12,7 @@ All URIs are relative to {{basePath}}, except if the operation defines another b
 ## `{{{operationId}}}()`
 
 ```php
-{{{operationId}}}({{#allParams}}${{paramName}}{{^-last}}, {{/-last}}{{/allParams}}){{#returnType}}: {{{.}}}{{/returnType}}
+{{{operationId}}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}}){{#returnType}}: {{{.}}}{{/returnType}}
 ```
 {{#servers}}
 {{#-first}}
@@ -55,19 +55,19 @@ $variables = [{{#variables}}
     '{{{name}}}' => '{{{default}}}{{^default}}YOUR_VALUE{{/default}}',{{/variables}}
 ];
 {{/-first}}{{/servers}}{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}
-$associative_array = [
-{{#allParams}}    '{{paramName}}' => {{{example}}}, // {{{dataType}}}{{#description}} | {{{.}}}{{/description}}
-{{/allParams}}
-{{#servers}}{{#-first}}
+{{#exts.x-fc-positional-params}}${{paramName}} = {{{example}}}; // {{{dataType}}}{{#description}} | {{{.}}}{{/description}}
+{{/exts.x-fc-positional-params}}$options = [
+{{#exts.x-fc-grouped-params}}    '{{paramName}}' => {{{example}}}, // {{{dataType}}}{{#description}} | {{{.}}}{{/description}}
+{{/exts.x-fc-grouped-params}}{{#servers}}{{#-first}}
     'hostIndex' => 0,
-    $variables = [{{#variables}}
+    'variables' => [{{#variables}}
         '{{{name}}}' => '{{{default}}}{{^default}}YOUR_VALUE{{/default}}',{{/variables}}
     ],
 {{/-first}}{{/servers}}];
 {{/exts.x-group-parameters}}
 
 try {
-    {{#returnType}}$result = {{/returnType}}$apiInstance->{{{operationId}}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{#servers}}{{#-first}}{{#allParams}}{{#-first}}, {{/-first}}{{/allParams}}$hostIndex, $variables{{/-first}}{{/servers}}{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}$associate_array{{/exts.x-group-parameters}});{{#returnType}}
+    {{#returnType}}$result = {{/returnType}}$apiInstance->{{{operationId}}}({{^exts.x-group-parameters}}{{#allParams}}${{paramName}}{{^-last}}, {{/-last}}{{/allParams}}{{#servers}}{{#-first}}{{#allParams}}{{#-first}}, {{/-first}}{{/allParams}}$hostIndex, $variables{{/-first}}{{/servers}}{{/exts.x-group-parameters}}{{#exts.x-group-parameters}}{{#exts.x-fc-positional-params}}${{paramName}}, {{/exts.x-fc-positional-params}}$options{{/exts.x-group-parameters}});{{#returnType}}
     print_r($result);{{/returnType}}
 } catch (Exception $e) {
     echo 'Exception when calling {{classname}}->{{operationId}}: ', $e->getMessage(), PHP_EOL;
