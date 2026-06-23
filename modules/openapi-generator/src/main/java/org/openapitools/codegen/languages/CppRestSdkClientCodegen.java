@@ -348,7 +348,12 @@ public class CppRestSdkClientCodegen extends AbstractCppCodegen {
     public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
         OperationMap operations = objs.getOperations();
         List<CodegenOperation> operationList = operations.getOperation();
+        boolean groupParameters = Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")));
         for (CodegenOperation op : operationList) {
+            // when useSingleRequestParameter is enabled, group all params into one struct
+            if (groupParameters && !op.vendorExtensions.containsKey("x-group-parameters")) {
+                op.vendorExtensions.put("x-group-parameters", true);
+            }
             for (String hdr : op.imports) {
                 if (importMapping.containsKey(hdr)) {
                     continue;

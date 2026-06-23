@@ -50,7 +50,12 @@ class {{{classname}}} {
   ///
     {{/-last}}
   {{/allParams}}
-  Future<Response> {{{nickname}}}WithHttpInfo({{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}) async {
+  Future<Response> {{{nickname}}}WithHttpInfo({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}Api{{operationIdCamelCase}}Request request,{{/vendorExtensions.x-group-parameters}}) async {
+    {{#vendorExtensions.x-group-parameters}}
+    {{#allParams}}
+    final {{{paramName}}} = request.{{{paramName}}};
+    {{/allParams}}
+    {{/vendorExtensions.x-group-parameters}}
     // ignore: prefer_const_declarations
     final path = r'{{{path}}}'{{#pathParams}}
       .replaceAll({{=<% %>=}}'{<% baseName %>}'<%={{ }}=%>, {{{paramName}}}{{^isString}}.toString(){{/isString}}){{/pathParams}};
@@ -162,8 +167,8 @@ class {{{classname}}} {
   ///
     {{/-last}}
   {{/allParams}}
-  Future<{{#returnType}}{{{.}}}?{{/returnType}}{{^returnType}}void{{/returnType}}> {{{nickname}}}({{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}) async {
-    final response = await {{{nickname}}}WithHttpInfo({{#allParams}}{{#required}}{{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}} {{#allParams}}{{^required}}{{{paramName}}}: {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} {{/hasOptionalParams}});
+  Future<{{#returnType}}{{{.}}}?{{/returnType}}{{^returnType}}void{{/returnType}}> {{{nickname}}}({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{dataType}}} {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}}{ {{#allParams}}{{^required}}{{{dataType}}}? {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} }{{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}Api{{operationIdCamelCase}}Request request,{{/vendorExtensions.x-group-parameters}}) async {
+    final response = await {{{nickname}}}WithHttpInfo({{^vendorExtensions.x-group-parameters}}{{#allParams}}{{#required}}{{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}}{{#hasOptionalParams}} {{#allParams}}{{^required}}{{{paramName}}}: {{{paramName}}},{{^-last}} {{/-last}}{{/required}}{{/allParams}} {{/hasOptionalParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}request,{{/vendorExtensions.x-group-parameters}});
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -192,4 +197,20 @@ class {{{classname}}} {
   }
   {{/operation}}
 }
+{{#operation}}
+{{#vendorExtensions.x-group-parameters}}
+
+/// Request parameters for [{{{classname}}}.{{{nickname}}}].
+class Api{{operationIdCamelCase}}Request {
+  const Api{{operationIdCamelCase}}Request({{#hasParams}}{
+{{#allParams}}
+    {{#required}}required {{/required}}this.{{{paramName}}},
+{{/allParams}}
+  }{{/hasParams}});
+{{#allParams}}
+  final {{{dataType}}}{{^required}}?{{/required}} {{{paramName}}};
+{{/allParams}}
+}
+{{/vendorExtensions.x-group-parameters}}
+{{/operation}}
 {{/operations}}

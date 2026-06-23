@@ -1,8 +1,13 @@
 (
         self,
+        {{^vendorExtensions.x-group-parameters}}
         {{#allParams}}
         {{paramName}}: {{{vendorExtensions.x-py-typing}}}{{^required}} = None{{/required}},
         {{/allParams}}
+        {{/vendorExtensions.x-group-parameters}}
+        {{#vendorExtensions.x-group-parameters}}
+        {{operationIdCamelCase}}_request: Api{{operationIdCamelCase}}Request,
+        {{/vendorExtensions.x-group-parameters}}
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],

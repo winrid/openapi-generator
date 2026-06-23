@@ -1289,7 +1289,12 @@ public class Swift6ClientCodegen extends DefaultCodegen implements CodegenConfig
         HashMap<String, CodegenModel> modelMaps = ModelMap.toCodegenModelMap(allModels);
 
         List<CodegenOperation> operations = objectMap.getOperation();
+        boolean groupParameters = Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")));
         for (CodegenOperation operation : operations) {
+            // when useSingleRequestParameter is enabled, group all params into one struct
+            if (groupParameters && !operation.vendorExtensions.containsKey("x-group-parameters")) {
+                operation.vendorExtensions.put("x-group-parameters", true);
+            }
             for (CodegenParameter cp : operation.allParams) {
                 cp.vendorExtensions.put("x-swift-example", constructExampleCode(cp, modelMaps, new HashSet<>()));
             }

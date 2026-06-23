@@ -20,8 +20,12 @@ package org.openapitools.codegen.languages;
 import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.CliOption;
 import org.openapitools.codegen.CodegenConstants;
+import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.CodegenType;
 import org.openapitools.codegen.SupportingFile;
+import org.openapitools.codegen.model.ModelMap;
+import org.openapitools.codegen.model.OperationMap;
+import org.openapitools.codegen.model.OperationsMap;
 import org.openapitools.codegen.meta.features.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,5 +146,25 @@ public class PhpClientCodegen extends AbstractPhpCodegen {
             supportingFiles.add(new SupportingFile("DebugPlugin.mustache", toSrcPath(invokerPackage, srcBasePath), "DebugPlugin.php"));
         }
 
+    }
+
+    @Override
+    public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
+        objs = super.postProcessOperationsWithModels(objs, allModels);
+
+        // when useSingleRequestParameter is enabled, set x-group-parameters so the
+        // template emits one $associative_array argument instead of one per parameter
+        if (Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")))) {
+            OperationMap operations = objs.getOperations();
+            if (operations != null) {
+                for (CodegenOperation operation : operations.getOperation()) {
+                    if (!operation.vendorExtensions.containsKey("x-group-parameters")) {
+                        operation.vendorExtensions.put("x-group-parameters", true);
+                    }
+                }
+            }
+        }
+
+        return objs;
     }
 }

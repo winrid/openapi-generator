@@ -605,8 +605,14 @@ public class NimClientCodegen extends DefaultCodegen implements CodegenConfig {
     public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
         OperationMap objectMap = objs.getOperations();
         List<CodegenOperation> operations = objectMap.getOperation();
+        boolean groupParameters = Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")));
         for (CodegenOperation operation : operations) {
             operation.httpMethod = operation.httpMethod.toLowerCase(Locale.ROOT);
+
+            // when useSingleRequestParameter is enabled, group all params into one object
+            if (groupParameters && !operation.vendorExtensions.containsKey("x-group-parameters")) {
+                operation.vendorExtensions.put("x-group-parameters", true);
+            }
 
             // Set custom flag for DELETE operations with body to use different template logic
             // Nim's httpClient.delete() doesn't support a body parameter

@@ -4,10 +4,16 @@
         {{{.}}}
         {{/notes}}
 
+        {{#vendorExtensions.x-group-parameters}}
+        :param {{operationIdCamelCase}}_request: The request object containing all parameters for this operation. (required)
+        :type {{operationIdCamelCase}}_request: Api{{operationIdCamelCase}}Request
+        {{/vendorExtensions.x-group-parameters}}
+        {{^vendorExtensions.x-group-parameters}}
         {{#allParams}}
         :param {{paramName}}:{{#description}} {{{.}}}{{/description}}{{#required}} (required){{/required}}{{#optional}}(optional){{/optional}}
         :type {{paramName}}: {{dataType}}{{#optional}}, optional{{/optional}}
         {{/allParams}}
+        {{/vendorExtensions.x-group-parameters}}
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -34,9 +40,16 @@
         {{/isDeprecated}}
 
         _param = self._{{operationId}}_serialize(
+            {{^vendorExtensions.x-group-parameters}}
             {{#allParams}}
             {{paramName}}={{paramName}},
             {{/allParams}}
+            {{/vendorExtensions.x-group-parameters}}
+            {{#vendorExtensions.x-group-parameters}}
+            {{#allParams}}
+            {{paramName}}={{operationIdCamelCase}}_request.{{paramName}},
+            {{/allParams}}
+            {{/vendorExtensions.x-group-parameters}}
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,

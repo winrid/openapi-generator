@@ -608,6 +608,11 @@ public class RubyClientCodegen extends AbstractRubyCodegen {
 
         List<CodegenOperation> operationList = operations.getOperation();
         for (CodegenOperation op : operationList) {
+            // when useSingleRequestParameter is enabled, set x-group-parameters so the
+            // template collects every parameter into the single opts hash
+            if (Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false"))) && !op.vendorExtensions.containsKey("x-group-parameters")) {
+                op.vendorExtensions.put("x-group-parameters", true);
+            }
             for (CodegenParameter p : op.allParams) {
                 p.vendorExtensions.put("x-ruby-example", constructExampleCode(p, modelMaps, processedModelMaps));
             }

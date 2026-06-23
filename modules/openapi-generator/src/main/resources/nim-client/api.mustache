@@ -28,7 +28,19 @@ template constructResult[T](response: Response): untyped =
     (none(T.typedesc), response)
 
 {{#operations}}{{#operation}}
-proc {{{operationId}}}*(httpClient: HttpClient{{#allParams}}, {{{paramName}}}: {{#isString}}string{{/isString}}{{#isUuid}}string{{/isUuid}}{{^isString}}{{^isUuid}}{{{datatypeWithEnum}}}{{^datatypeWithEnum}}{{{dataType}}}{{/datatypeWithEnum}}{{/isUuid}}{{/isString}}{{/allParams}}): {{^returnType}}Response{{/returnType}}{{#returnType}}(Option[{{{.}}}], Response){{/returnType}}{{#isDeprecated}} {.deprecated.}{{/isDeprecated}} =
+{{#vendorExtensions.x-group-parameters}}
+type Api{{operationIdCamelCase}}Request* = object
+{{#allParams}}
+  {{{paramName}}}*: {{#isString}}string{{/isString}}{{#isUuid}}string{{/isUuid}}{{^isString}}{{^isUuid}}{{{datatypeWithEnum}}}{{^datatypeWithEnum}}{{{dataType}}}{{/datatypeWithEnum}}{{/isUuid}}{{/isString}}
+{{/allParams}}
+
+{{/vendorExtensions.x-group-parameters}}
+proc {{{operationId}}}*(httpClient: HttpClient{{^vendorExtensions.x-group-parameters}}{{#allParams}}, {{{paramName}}}: {{#isString}}string{{/isString}}{{#isUuid}}string{{/isUuid}}{{^isString}}{{^isUuid}}{{{datatypeWithEnum}}}{{^datatypeWithEnum}}{{{dataType}}}{{/datatypeWithEnum}}{{/isUuid}}{{/isString}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}, params: Api{{operationIdCamelCase}}Request{{/vendorExtensions.x-group-parameters}}): {{^returnType}}Response{{/returnType}}{{#returnType}}(Option[{{{.}}}], Response){{/returnType}}{{#isDeprecated}} {.deprecated.}{{/isDeprecated}} =
+{{#vendorExtensions.x-group-parameters}}
+{{#allParams}}
+  let {{{paramName}}} = params.{{{paramName}}}
+{{/allParams}}
+{{/vendorExtensions.x-group-parameters}}
   ## {{{summary}}}{{#hasBodyParam}}
   httpClient.headers["Content-Type"] = "application/json"{{/hasBodyParam}}{{#hasFormParams}}{{^isMultipart}}
   httpClient.headers["Content-Type"] = "application/x-www-form-urlencoded"{{/isMultipart}}{{#isMultipart}}

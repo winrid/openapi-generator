@@ -30,11 +30,24 @@ public:
     virtual ~I{{classname}}() = default;
 
     {{#operation}}
+    {{#vendorExtensions.x-group-parameters}}
+    struct Api{{operationIdCamelCase}}Request
+    {
+        {{#allParams}}
+        {{^required}}boost::optional<{{/required}}{{{dataType}}}{{^required}}>{{/required}} {{paramName}};
+        {{/allParams}}
+    };
+    virtual pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{operationId}}(
+        const Api{{operationIdCamelCase}}Request& request
+    ) const = 0;
+    {{/vendorExtensions.x-group-parameters}}
+    {{^vendorExtensions.x-group-parameters}}
     virtual pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{operationId}}(
         {{#allParams}}
         {{^required}}boost::optional<{{/required}}{{{dataType}}}{{^required}}>{{/required}} {{paramName}}{{^-last}},{{/-last}}
         {{/allParams}}
     ) const = 0;
+    {{/vendorExtensions.x-group-parameters}}
     {{/operation}}
 };{{/gmockApis}}
 
@@ -64,11 +77,26 @@ public:
     {{#allParams}}
     /// <param name="{{paramName}}">{{#lambda.multiline_comment_4}}{{description}}{{/lambda.multiline_comment_4}}{{^required}} (optional{{#defaultValue}}, default to {{.}}{{/defaultValue}}){{/required}}</param>
     {{/allParams}}
+    {{#vendorExtensions.x-group-parameters}}
+    {{^gmockApis}}
+    struct Api{{operationIdCamelCase}}Request
+    {
+        {{#allParams}}
+        {{^required}}boost::optional<{{/required}}{{{dataType}}}{{^required}}>{{/required}} {{paramName}};
+        {{/allParams}}
+    };
+    {{/gmockApis}}
+    pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{operationId}}(
+        const Api{{operationIdCamelCase}}Request& request
+    ) const{{#gmockApis}} override{{/gmockApis}};
+    {{/vendorExtensions.x-group-parameters}}
+    {{^vendorExtensions.x-group-parameters}}
     pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{operationId}}(
         {{#allParams}}
         {{^required}}boost::optional<{{/required}}{{{dataType}}}{{^required}}>{{/required}} {{paramName}}{{^-last}},{{/-last}}
         {{/allParams}}
     ) const{{#gmockApis}} override{{/gmockApis}};
+    {{/vendorExtensions.x-group-parameters}}
     {{/operation}}
 
 protected:

@@ -26,8 +26,17 @@ using namespace {{modelNamespace}};
 }
 
 {{#operation}}
+{{#vendorExtensions.x-group-parameters}}
+pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{operationId}}(const {{classname}}::Api{{operationIdCamelCase}}Request& request) const
+{
+{{#allParams}}
+    auto {{paramName}} = request.{{paramName}};
+{{/allParams}}
+{{/vendorExtensions.x-group-parameters}}
+{{^vendorExtensions.x-group-parameters}}
 pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{operationId}}({{#allParams}}{{^required}}boost::optional<{{/required}}{{{dataType}}}{{^required}}>{{/required}} {{paramName}}{{^-last}}, {{/-last}}{{/allParams}}) const
 {
+{{/vendorExtensions.x-group-parameters}}
 {{#allParams}}{{#required}}{{^isPrimitiveType}}{{^isContainer}}
     // verify the required parameter '{{paramName}}' is set
     if ({{paramName}} == nullptr)

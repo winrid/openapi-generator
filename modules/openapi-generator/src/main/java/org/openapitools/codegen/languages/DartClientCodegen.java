@@ -19,11 +19,16 @@ package org.openapitools.codegen.languages;
 
 import org.openapitools.codegen.CliOption;
 import org.openapitools.codegen.CodegenConstants;
+import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.SupportingFile;
+import org.openapitools.codegen.model.ModelMap;
+import org.openapitools.codegen.model.OperationMap;
+import org.openapitools.codegen.model.OperationsMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -99,5 +104,24 @@ public class DartClientCodegen extends AbstractDartCodegen {
                 additionalProperties.put(SERIALIZATION_LIBRARY_NATIVE, "true");
 
         }
+    }
+
+    @Override
+    public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
+        objs = super.postProcessOperationsWithModels(objs, allModels);
+
+        // when useSingleRequestParameter is enabled, group all params into one request object
+        if (Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")))) {
+            OperationMap operations = objs.getOperations();
+            if (operations != null) {
+                for (CodegenOperation op : operations.getOperation()) {
+                    if (!op.vendorExtensions.containsKey("x-group-parameters")) {
+                        op.vendorExtensions.put("x-group-parameters", true);
+                    }
+                }
+            }
+        }
+
+        return objs;
     }
 }

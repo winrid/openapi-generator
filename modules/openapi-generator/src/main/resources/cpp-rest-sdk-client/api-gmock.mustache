@@ -24,11 +24,18 @@ public:
     ~{{classname}}Mock() override = default;
 
     {{#operation}}
+    {{#vendorExtensions.x-group-parameters}}
+    MOCK_METHOD1( {{operationId}}, pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> (
+        const Base::Api{{operationIdCamelCase}}Request& request
+    ) );
+    {{/vendorExtensions.x-group-parameters}}
+    {{^vendorExtensions.x-group-parameters}}
     MOCK_METHOD{{allParams.size}}( {{operationId}}, pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> (
         {{#allParams}}
         {{^required}}boost::optional<{{/required}}{{#isFile}}std::shared_ptr<{{/isFile}}{{{dataType}}}{{#isFile}}>{{/isFile}}{{^required}}>{{/required}} {{paramName}}{{^-last}},{{/-last}}
         {{/allParams}}
     ) );
+    {{/vendorExtensions.x-group-parameters}}
     {{/operation}}
 };
 

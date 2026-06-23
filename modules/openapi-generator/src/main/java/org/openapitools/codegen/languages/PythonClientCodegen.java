@@ -22,6 +22,9 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.Setter;
 import org.apache.commons.lang3.Strings;
 import org.openapitools.codegen.*;
+import org.openapitools.codegen.model.ModelMap;
+import org.openapitools.codegen.model.OperationMap;
+import org.openapitools.codegen.model.OperationsMap;
 import org.openapitools.codegen.meta.GeneratorMetadata;
 import org.openapitools.codegen.meta.Stability;
 import org.openapitools.codegen.meta.features.*;
@@ -377,6 +380,25 @@ public class PythonClientCodegen extends AbstractPythonCodegen implements Codege
             modelImport += toModelFilename(name) + " import " + name;
         }
         return modelImport;
+    }
+
+    @Override
+    public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
+        objs = super.postProcessOperationsWithModels(objs, allModels);
+
+        // when useSingleRequestParameter is enabled, group all params into one request object
+        if (Boolean.parseBoolean(String.valueOf(additionalProperties.getOrDefault("useSingleRequestParameter", "false")))) {
+            OperationMap operations = objs.getOperations();
+            if (operations != null) {
+                for (CodegenOperation op : operations.getOperation()) {
+                    if (!op.vendorExtensions.containsKey("x-group-parameters")) {
+                        op.vendorExtensions.put("x-group-parameters", true);
+                    }
+                }
+            }
+        }
+
+        return objs;
     }
 
     @Override
