@@ -17,7 +17,7 @@ from {{packageName}}.rest import RESTResponseType
 {{#operations}}
 {{#operation}}
 {{#vendorExtensions.x-group-parameters}}
-{{#vendorExtensions.x-fc-has-grouped}}
+{{#vendorExtensions.x-fc-grouped-multi}}
 from pydantic import BaseModel
 
 
@@ -32,7 +32,7 @@ class Api{{operationIdCamelCase}}Options(BaseModel):
 {{/allParams}}
 
 
-{{/vendorExtensions.x-fc-has-grouped}}
+{{/vendorExtensions.x-fc-grouped-multi}}
 {{/vendorExtensions.x-group-parameters}}
 {{/operation}}
 class {{classname}}:

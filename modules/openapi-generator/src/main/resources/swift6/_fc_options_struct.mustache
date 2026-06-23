@@ -1,4 +1,4 @@
-{{#vendorExtensions.x-fc-has-grouped}}
+{{#vendorExtensions.x-fc-grouped-multi}}
 
     /** Optional parameters for {{operationId}}. */
     {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} struct Api{{operationIdCamelCase}}Options: Sendable {
@@ -12,4 +12,4 @@
             {{/vendorExtensions.x-fc-grouped-params}}
         }
     }
-{{/vendorExtensions.x-fc-has-grouped}}
+{{/vendorExtensions.x-fc-grouped-multi}}

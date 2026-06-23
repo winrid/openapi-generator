@@ -19,10 +19,23 @@
         {{/isBodyParam}}
         {{/required}}
         {{/allParams}}
+        {{! exactly 1 optional (has-grouped but not multi): document the single optional non-body param directly }}
         {{#vendorExtensions.x-fc-has-grouped}}
+        {{^vendorExtensions.x-fc-grouped-multi}}
+        {{#allParams}}
+        {{^required}}
+        {{^isBodyParam}}
+        :param {{paramName}}:{{#description}} {{{.}}}{{/description}} (optional)
+        :type {{paramName}}: {{dataType}}, optional
+        {{/isBodyParam}}
+        {{/required}}
+        {{/allParams}}
+        {{/vendorExtensions.x-fc-grouped-multi}}
+        {{/vendorExtensions.x-fc-has-grouped}}
+        {{#vendorExtensions.x-fc-grouped-multi}}
         :param options: Optional parameters for this operation.
         :type options: Api{{operationIdCamelCase}}Options, optional
-        {{/vendorExtensions.x-fc-has-grouped}}
+        {{/vendorExtensions.x-fc-grouped-multi}}
         {{/vendorExtensions.x-group-parameters}}
         {{^vendorExtensions.x-group-parameters}}
         {{#allParams}}
@@ -62,6 +75,7 @@
             {{/allParams}}
             {{/vendorExtensions.x-group-parameters}}
             {{#vendorExtensions.x-group-parameters}}
+            {{! required params and the optional body are always passed directly }}
             {{#allParams}}
             {{#required}}
             {{paramName}}={{paramName}},
@@ -70,11 +84,30 @@
             {{#isBodyParam}}
             {{paramName}}={{paramName}},
             {{/isBodyParam}}
+            {{/required}}
+            {{/allParams}}
+            {{! 2+ optionals are read off the options object (operation-level gate, kept outside the param loop) }}
+            {{#vendorExtensions.x-fc-grouped-multi}}
+            {{#allParams}}
+            {{^required}}
             {{^isBodyParam}}
             {{paramName}}=options.{{paramName}} if options is not None else None,
             {{/isBodyParam}}
             {{/required}}
             {{/allParams}}
+            {{/vendorExtensions.x-fc-grouped-multi}}
+            {{! exactly 1 optional (has-grouped but not multi) is a direct keyword arg }}
+            {{#vendorExtensions.x-fc-has-grouped}}
+            {{^vendorExtensions.x-fc-grouped-multi}}
+            {{#allParams}}
+            {{^required}}
+            {{^isBodyParam}}
+            {{paramName}}={{paramName}},
+            {{/isBodyParam}}
+            {{/required}}
+            {{/allParams}}
+            {{/vendorExtensions.x-fc-grouped-multi}}
+            {{/vendorExtensions.x-fc-has-grouped}}
             {{/vendorExtensions.x-group-parameters}}
             _request_auth=_request_auth,
             _content_type=_content_type,

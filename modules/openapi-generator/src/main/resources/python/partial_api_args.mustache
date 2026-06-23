@@ -19,9 +19,21 @@
         {{/isBodyParam}}
         {{/required}}
         {{/allParams}}
+        {{! exactly 1 optional (has-grouped but not multi): render that single optional non-body param directly as a keyword arg }}
         {{#vendorExtensions.x-fc-has-grouped}}
-        options: Optional[Api{{operationIdCamelCase}}Options] = None,
+        {{^vendorExtensions.x-fc-grouped-multi}}
+        {{#allParams}}
+        {{^required}}
+        {{^isBodyParam}}
+        {{paramName}}: {{{vendorExtensions.x-py-typing}}} = None,
+        {{/isBodyParam}}
+        {{/required}}
+        {{/allParams}}
+        {{/vendorExtensions.x-fc-grouped-multi}}
         {{/vendorExtensions.x-fc-has-grouped}}
+        {{#vendorExtensions.x-fc-grouped-multi}}
+        options: Optional[Api{{operationIdCamelCase}}Options] = None,
+        {{/vendorExtensions.x-fc-grouped-multi}}
         {{/vendorExtensions.x-group-parameters}}
         _request_timeout: Union[
             None,
