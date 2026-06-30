@@ -21,7 +21,7 @@ from {{packageName}}.rest import RESTResponseType
 from pydantic import BaseModel
 
 
-class Api{{operationIdCamelCase}}Options(BaseModel):
+class {{operationIdCamelCase}}Options(BaseModel):
     """Optional parameters for {{operationId}}."""
 {{#allParams}}
 {{^required}}

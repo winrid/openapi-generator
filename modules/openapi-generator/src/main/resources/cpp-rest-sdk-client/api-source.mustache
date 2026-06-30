@@ -33,7 +33,7 @@ pplx::task<{{{returnType}}}{{^returnType}}void{{/returnType}}> {{classname}}::{{
         {{/vendorExtensions.x-fc-positional-params}}
         {{#vendorExtensions.x-fc-has-positional}}{{#vendorExtensions.x-fc-grouped-single}}, {{/vendorExtensions.x-fc-grouped-single}}{{/vendorExtensions.x-fc-has-positional}}{{#vendorExtensions.x-fc-grouped-single}}boost::optional<{{{dataType}}}> {{paramName}}{{/vendorExtensions.x-fc-grouped-single}}
         {{#vendorExtensions.x-fc-grouped-multi}}
-        {{#vendorExtensions.x-fc-positional-params}}{{#-last}}, {{/-last}}{{/vendorExtensions.x-fc-positional-params}}const Api{{operationIdCamelCase}}Options& options
+        {{#vendorExtensions.x-fc-positional-params}}{{#-last}}, {{/-last}}{{/vendorExtensions.x-fc-positional-params}}const {{operationIdCamelCase}}Options& options
         {{/vendorExtensions.x-fc-grouped-multi}}
 ) const
 {
